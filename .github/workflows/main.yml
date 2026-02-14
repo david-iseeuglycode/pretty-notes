@@ -1,0 +1,25 @@
+name: Mirror to VPS
+on: [push]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy to Windows VPS
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+          REMOTE_URL: "David@iseeuglycode.org:PrettyNotes.git"
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          # Skip host key check for the VPS (or add the fingerprint to known_hosts)
+          ssh-keyscan -H your-vps-ip >> ~/.ssh/known_hosts
+          
+          git remote add vps "$REMOTE_URL"
+          git push vps main --force
