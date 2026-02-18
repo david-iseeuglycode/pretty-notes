@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.NVarChar(255)
+  password  String   @db.NVarChar(255)
+
+  folders   Folder[] 
+  notes     UserNoteConfiguration[] // Link to the join table
+
+  createdAt DateTime @default(now())
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.NVarChar(255)
+  content   String   @db.NVarChar(Max)
+  users     UserNoteConfiguration[] // Link to the join table
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserNoteConfiguration {
+  userId   Int
+  noteId   Int
+  folderId Int?
+
+  user     User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  note     Note    @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([userId, noteId])
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.NVarChar(100)
+  userId    Int
+
+  user      User     @relation(fields: [userId], references: [id])
+  notes     UserNoteConfiguration[]
+  
+  @@unique([name, userId])
+}

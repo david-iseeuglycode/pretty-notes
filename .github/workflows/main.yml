@@ -1,5 +1,8 @@
 name: Mirror to VPS
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   mirror:
@@ -10,16 +13,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Deploy to Windows VPS
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
-          REMOTE_URL: "David@iseeuglycode.org:PrettyNotes.git"
+      - name: Setup SSH Keys
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_DEPLOY_KEY }}
+
+      - name: Add VPS to Known Hosts
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          # Skip host key check for the VPS (or add the fingerprint to known_hosts)
-          ssh-keyscan -H your-vps-ip >> ~/.ssh/known_hosts
-          
-          git remote add vps "$REMOTE_URL"
+          ssh-keyscan -H iseeuglycode.org >> ~/.ssh/known_hosts
+
+      - name: Push to Windows VPS
+        run: |
+          git remote add vps David@iseeuglycode.org:PrettyNotes.git
+          git config --global core.sshCommand "ssh -o StrictHostKeyChecking=no"
           git push vps main --force

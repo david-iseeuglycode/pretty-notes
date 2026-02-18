@@ -1,0 +1,46 @@
+{
+  "name": "@pretty-notes/prisma",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "name": "prisma",
+    "targets": {
+      "prisma-generate": {
+        "command": "npx prisma generate --config=libs/prisma/prisma.config.ts",
+        "options": {
+          "cwd": "{workspaceRoot}"
+        }
+      },
+      "prisma-migrate": {
+        "command": "npx prisma migrate dev --config=libs/prisma/prisma.config.ts",
+        "options": {
+          "cwd": "{workspaceRoot}"
+        }
+      },
+      "prisma-migrate-deploy": {
+        "command": "npx prisma migrate deploy --config=libs/prisma/prisma.config.ts",
+        "options": {
+          "cwd": "{workspaceRoot}"
+        }
+      },
+      "prisma-studio": {
+        "command": "npx prisma studio --config=libs/prisma/prisma.config.ts",
+        "options": {
+          "cwd": "{workspaceRoot}"
+        }
+      }
+    }
+  },
+  "dependencies": {}
+}
