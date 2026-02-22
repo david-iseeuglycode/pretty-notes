@@ -28,6 +28,12 @@
           "cwd": "{workspaceRoot}"
         }
       },
+      "prisma-migrate-reset": {
+        "command": "npx prisma migrate reset --force --config=libs/prisma/prisma.config.ts",
+        "options": {
+          "cwd": "{workspaceRoot}"
+        }
+      },
       "prisma-migrate-deploy": {
         "command": "npx prisma migrate deploy --config=libs/prisma/prisma.config.ts",
         "options": {

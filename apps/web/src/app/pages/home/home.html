@@ -1,1 +1,45 @@
-<h1>Hello World</h1>
+@if (auth.currentUser(); as user) {
+  <div>
+    <p>Logged in as {{ user.email }} — <button (click)="logout()">Log out</button></p>
+
+    <h2>Your notes</h2>
+
+    @if (notes().length === 0) {
+      <p>No notes yet.</p>
+    } @else {
+      <ul>
+        @for (note of notes(); track note.id) {
+          <li><button (click)="openNote(note.id)">{{ note.title }}</button></li>
+        }
+      </ul>
+    }
+
+    <h3>New note</h3>
+    <input [(ngModel)]="newNoteTitle" placeholder="Title" />
+    <button (click)="createNote()">Create</button>
+  </div>
+} @else {
+  <div>
+    <h2>{{ mode === 'login' ? 'Log in' : 'Create account' }}</h2>
+
+    @if (error) {
+      <p>{{ error }}</p>
+    }
+
+    <form (ngSubmit)="submit()">
+      <div>
+        <label>Email <input type="email" [(ngModel)]="email" name="email" required /></label>
+      </div>
+      <div>
+        <label>Password <input type="password" [(ngModel)]="password" name="password" required /></label>
+      </div>
+      <button type="submit">{{ mode === 'login' ? 'Log in' : 'Register' }}</button>
+    </form>
+
+    @if (mode === 'login') {
+      <p>No account? <button (click)="mode = 'register'">Register</button></p>
+    } @else {
+      <p>Already have an account? <button (click)="mode = 'login'">Log in</button></p>
+    }
+  </div>
+}

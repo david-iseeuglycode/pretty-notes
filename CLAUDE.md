@@ -1,10 +1,16 @@
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 
+# General guidelines
+
+- Help the user understand how the flows between different components work.
+- Point out integral connection points between code files.
+- Guide the user to perform coding tasks by showing abstract examples, rather than providing the actual code needed, unless the user asks for it by saying the magic word "plz".
+
 # General Guidelines for working with Nx
 
 - When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
-- You have access to the Nx MCP server and its tools, use them to help the user
+- You have access to the Nx MCP server and its tools, when asked for help with such tasks, use them to help the user, but prefer instructing the user on how do it themself.
 - When answering questions about the repository, use the `nx_workspace` tool first to gain an understanding of the workspace architecture where applicable.
 - When working in individual projects, use the `nx_project_details` mcp tool to analyze and understand the specific project structure and dependencies
 - For questions around nx configuration, best practices or if you're unsure, use the `nx_docs` tool to get relevant, up-to-date docs. Always use this instead of assuming things about nx configuration
@@ -20,7 +26,7 @@ A note-taking application built as an Nx monorepo with Angular frontend, NestJS 
 ## Architecture
 
 ```
-claude-test/                     (Nx workspace root)
+pretty-notes/                    (Nx workspace root)
   apps/
     api/                         (NestJS backend — port 3000, prefix /api)
     web/                         (Angular frontend — port 4200, SCSS + Tailwind)
@@ -38,6 +44,9 @@ npm start
 # Serve individually
 npx nx serve api                 # NestJS backend on http://localhost:3000/api
 npx nx serve web                 # Angular frontend on http://localhost:4200 (proxies /api to :3000)
+
+# Clean
+npx nx reset
 
 # Build (production — generates Prisma client first, then builds both apps)
 npm run build

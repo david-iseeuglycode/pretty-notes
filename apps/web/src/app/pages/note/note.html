@@ -1,0 +1,32 @@
+@if (note(); as n) {
+  <h1>{{ n.title }}</h1>
+  <textarea [ngModel]="n.content" (ngModelChange)="onContentChange($event)"></textarea>
+
+  <section>
+    <h2>Collaborators</h2>
+    <ul>
+      @for (user of collaborators(); track user.id) {
+        <li>{{ user.email }}</li>
+      }
+    </ul>
+
+    @if (isCreator) {
+      <form (ngSubmit)="addCollaborator()">
+        <input
+          type="email"
+          [(ngModel)]="newCollaboratorEmail"
+          name="collaboratorEmail"
+          placeholder="Add collaborator by email"
+        />
+        <button type="submit">Add</button>
+      </form>
+      @if (collaboratorError()) {
+        <p>{{ collaboratorError() }}</p>
+      }
+    }
+  </section>
+} @else if (error()) {
+  <p>{{ error() }}</p>
+} @else {
+  <p>Loading...</p>
+}
