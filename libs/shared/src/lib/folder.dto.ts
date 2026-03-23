@@ -1,12 +1,15 @@
-export interface CreateFolderDto {
+export interface CreateFolderDto
+{
   name: string;
 }
 
-export interface UpdateFolderDto {
+export interface UpdateFolderDto
+{
   name?: string;
 }
 
-export interface FolderDto {
+export interface FolderDto
+{
   id: number;
   name: string;
   userId: number;

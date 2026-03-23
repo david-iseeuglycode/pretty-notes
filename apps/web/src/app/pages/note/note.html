@@ -1,32 +1,39 @@
 @if (note(); as n) {
-  <h1>{{ n.title }}</h1>
-  <textarea [ngModel]="n.content" (ngModelChange)="onContentChange($event)"></textarea>
+<h1>{{ n.title }}</h1>
+<textarea
+  [ngModel]="n.content"
+  (ngModelChange)="onContentChange($event)"
+></textarea>
 
-  <section>
-    <h2>Collaborators</h2>
-    <ul>
-      @for (user of collaborators(); track user.id) {
-        <li>{{ user.email }}</li>
+<section>
+  @if (collaborators().length > 0) {
+  <h2>Collaborators</h2>
+  <ul>
+    @for (user of collaborators(); track user.id) {
+    <li class="collaborator">
+      {{ user.email }} @if (createdBy(n, user)) {
+      <span class="author">(Author)</span>
       }
-    </ul>
-
-    @if (isCreator) {
-      <form (ngSubmit)="addCollaborator()">
-        <input
-          type="email"
-          [(ngModel)]="newCollaboratorEmail"
-          name="collaboratorEmail"
-          placeholder="Add collaborator by email"
-        />
-        <button type="submit">Add</button>
-      </form>
-      @if (collaboratorError()) {
-        <p>{{ collaboratorError() }}</p>
-      }
+    </li>
     }
-  </section>
+  </ul>
+  } @if (isCreator) {
+  <form (ngSubmit)="addCollaborator()">
+    <input
+      type="email"
+      [(ngModel)]="newCollaboratorEmail"
+      name="collaboratorEmail"
+      placeholder="Add collaborator by email"
+    />
+    <button type="submit">Add</button>
+  </form>
+
+  @if (collaboratorError()) {
+  <p>{{ collaboratorError() }}</p>
+  } }
+</section>
 } @else if (error()) {
-  <p>{{ error() }}</p>
+<p>{{ error() }}</p>
 } @else {
-  <p>Loading...</p>
+<p>Loading...</p>
 }

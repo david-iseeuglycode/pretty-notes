@@ -1,16 +1,21 @@
-import { UserDto } from './user.dto.js';
+import {
+  UserDto,
+} from './user.dto.js';
 
-export interface CreateNoteDto {
+export interface CreateNoteDto
+{
   title: string;
   content: string;
 }
 
-export interface UpdateNoteDto {
+export interface UpdateNoteDto
+{
   title?: string;
   content?: string;
 }
 
-export interface NoteDto {
+export interface NoteDto
+{
   id: number;
   title: string;
   content: string;

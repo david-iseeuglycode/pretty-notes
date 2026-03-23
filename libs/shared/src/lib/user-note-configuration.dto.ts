@@ -1,10 +1,12 @@
-export interface UserNoteConfigurationDto {
+export interface UserNoteConfigurationDto
+{
   userId: number;
   noteId: number;
   folderId: number | null;
 }
 
-export interface AssignNoteDto {
+export interface AssignNoteDto
+{
   noteId: number;
   folderId?: number;
 }

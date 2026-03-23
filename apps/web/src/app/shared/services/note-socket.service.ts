@@ -1,54 +1,83 @@
-import { Injectable } from '@angular/core';
-import { io, Socket } from 'socket.io-client';
-import { NoteUpdateEvent } from '@pretty-notes/shared';
+import {
+  Injectable,
+} from '@angular/core';
+import {
+  io,
+  Socket,
+} from 'socket.io-client';
+import {
+  NoteUpdateEvent,
+} from '@pretty-notes/shared';
 
-@Injectable({ providedIn: 'root' })
-
-export class NoteSocketService {
+@Injectable(
+  {
+    providedIn: 'root',
+  },
+)
+export class NoteSocketService
+{
   private socket: Socket = io(
     {
-      transports: ['websocket']
-      , autoConnect: false
-    }
+      transports: ['websocket'],
+      autoConnect: false,
+    },
   );
 
-  joinNote(noteId: number): void {
+  joinNote(
+    noteId: number,
+  ): void {
     if (this.socket.connected) {
-      this.socket.emit('joinNote', noteId);
+      this.socket.emit(
+        'joinNote',
+        noteId,
+      );
     } else {
       this.socket.once(
-        'connect'
-        , () => {
+        'connect',
+        (
+        ) => {
           this.socket.emit(
-            'joinNote'
-            , noteId
+            'joinNote',
+            noteId,
           );
-        }
+        },
       );
 
-      this.socket.connect();
+      this.socket.connect(
+      );
     }
   }
 
-  sendUpdate(event: NoteUpdateEvent): void {
+  sendUpdate(
+    event: NoteUpdateEvent
+  ): void {
     this.socket.emit(
-      'updateNote'
-      , event
+      'updateNote',
+      event,
     );
   }
 
-  onNoteUpdated(callback: (
-    data: { content: string }
-  ) => void): void {
+  onNoteUpdated(
+    callback: (
+      data: {
+        content: string,
+      },
+    ) => void): void {
     this.socket.on(
-      'noteUpdated'
-      , callback
+      'noteUpdated',
+      callback,
     );
   }
 
-  offNoteUpdated(): void {
-    this.socket.off('noteUpdated');
-    this.socket.off('connect');
-    this.socket.disconnect();
+  offNoteUpdated(
+  ): void {
+    this.socket.off(
+      'noteUpdated',
+    );
+    this.socket.off(
+      'connect',
+    );
+    this.socket.disconnect(
+    );
   }
 }

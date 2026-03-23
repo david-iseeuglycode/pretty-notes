@@ -1,9 +1,11 @@
-export interface CreateUserDto {
+export interface CreateUserDto
+{
   email: string;
   password: string;
 }
 
-export interface UserDto {
+export interface UserDto
+{
   id: number;
   email: string;
   createdAt: string;

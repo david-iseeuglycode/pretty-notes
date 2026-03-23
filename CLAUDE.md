@@ -86,10 +86,20 @@ npm run deploy                   # Start/restart via PM2 (ecosystem.config.cjs)
 import { PrismaModule, PrismaService } from '@pretty-notes/prisma';
 
 // Generated Prisma types
-import { User, Note, Folder, UserNoteConfiguration } from '@pretty-notes/prisma';
+import {
+  User,
+  Note,
+  Folder,
+  UserNoteConfiguration,
+} from '@pretty-notes/prisma';
 
 // Shared DTOs (Angular & NestJS)
-import { NoteDto, CreateNoteDto, UpdateNoteDto, ApiResponse } from '@pretty-notes/shared';
+import {
+  NoteDto,
+  CreateNoteDto,
+  UpdateNoteDto,
+  ApiResponse,
+} from '@pretty-notes/shared';
 ```
 
 ## Deployment

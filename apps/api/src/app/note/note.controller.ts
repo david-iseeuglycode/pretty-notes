@@ -1,49 +1,124 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
-import type { Request } from 'express';
-import { JwtGuard } from '../auth/jwt.guard.js';
-import { CsrfGuard } from '../auth/csrf.guard.js';
-import { NoteService } from './note.service.js';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  JwtGuard,
+} from '../auth/jwt.guard.js';
+import {
+  CsrfGuard,
+} from '../auth/csrf.guard.js';
+import {
+  NoteService,
+} from './note.service.js';
+import {
+  CurrentUser,
+} from '../auth/current-user.decorator.js';
+import type {
+  JwtUser,
+} from '../auth/current-user.decorator.js';
 
-interface JwtUser { sub: number; email: string; csrfToken: string; }
+@Controller(
+  'notes',
+)
+@UseGuards(
+  JwtGuard,
+)
+export class NoteController
+{
+  constructor(
+    private noteService: NoteService,
+  ) {}
 
-@Controller('notes')
-@UseGuards(JwtGuard)
-export class NoteController {
-  constructor(private noteService: NoteService) {}
-
-  @Get()
-  findAll(@Req() req: Request) {
-    const user = (req as Request & { user: JwtUser }).user;
-    return this.noteService.findAllForUser(user.sub);
-  }
-
-  @Post()
-  @UseGuards(CsrfGuard)
-  create(@Req() req: Request, @Body('title') title: string) {
-    const user = (req as Request & { user: JwtUser }).user;
-    return this.noteService.create(user.sub, title);
-  }
-
-  @Get(':id')
-  findOne(@Req() req: Request, @Param('id', ParseIntPipe) id: number) {
-    const user = (req as Request & { user: JwtUser }).user;
-    return this.noteService.findOne(id, user.sub);
-  }
-
-  @Get(':id/collaborators')
-  getCollaborators(@Req() req: Request, @Param('id', ParseIntPipe) id: number) {
-    const user = (req as Request & { user: JwtUser }).user;
-    return this.noteService.getCollaborators(id, user.sub);
-  }
-
-  @Post(':id/collaborators')
-  @UseGuards(CsrfGuard)
-  addCollaborator(
-    @Req() req: Request,
-    @Param('id', ParseIntPipe) id: number,
-    @Body('email') email: string,
+  @Get(
+  )
+  findAll(
+    @CurrentUser(
+    ) user: JwtUser,
   ) {
-    const user = (req as Request & { user: JwtUser }).user;
-    return this.noteService.addCollaborator(id, user.sub, email);
+    return this.noteService.findAllForUser(
+      user.sub,
+    );
+  }
+
+  @Post(
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  create(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Body(
+      'title',
+    ) title: string,
+  ) {
+    return this.noteService.create(
+      user.sub,
+      title,
+    );
+  }
+
+  @Get(
+    ':id',
+  )
+  findOne(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+  ) {
+    return this.noteService.findOne(
+      id,
+      user.sub,
+    );
+  }
+
+  @Get(
+    ':id/collaborators',
+  )
+  getCollaborators(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+  ) {
+    return this.noteService.getCollaborators(
+      id,
+      user.sub,
+    );
+  }
+
+  @Post(
+    ':id/collaborators',
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  addCollaborator(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+    @Body(
+      'email'
+    ) email: string,
+  ) {
+    return this.noteService.addCollaborator(
+      id,
+      user.sub,
+      email,
+    );
   }
 }

@@ -1,6 +1,8 @@
 @if (auth.currentUser(); as user) {
   <div>
-    <p>Logged in as {{ user.email }} — <button (click)="logout()">Log out</button></p>
+    <p>
+      Logged in as {{ user.email }} — <button (click)="logout()">Log out</button>
+    </p>
 
     <h2>Your notes</h2>
 
@@ -28,18 +30,28 @@
 
     <form (ngSubmit)="submit()">
       <div>
-        <label>Email <input type="email" [(ngModel)]="email" name="email" required /></label>
+        <label>Email
+          <input type="email" [(ngModel)]="email" name="email" required/>
+        </label>
       </div>
       <div>
-        <label>Password <input type="password" [(ngModel)]="password" name="password" required /></label>
+        <label>Password
+          <input type="password" [(ngModel)]="password" name="password" required/>
+        </label>
       </div>
-      <button type="submit">{{ mode === 'login' ? 'Log in' : 'Register' }}</button>
+      <button type="submit">
+        {{ mode === 'login' ? 'Log in' : 'Register' }}
+      </button>
     </form>
 
     @if (mode === 'login') {
-      <p>No account? <button (click)="mode = 'register'">Register</button></p>
+      <p>No account?
+        <button (click)="mode = 'register'">Register</button>
+      </p>
     } @else {
-      <p>Already have an account? <button (click)="mode = 'login'">Log in</button></p>
+      <p>Already have an account?
+        <button (click)="mode = 'login'">Log in</button>
+      </p>
     }
   </div>
 }
