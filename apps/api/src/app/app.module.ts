@@ -8,12 +8,6 @@ import {
   PrismaModule,
  } from '@pretty-notes/prisma';
 import {
-  AppController,
-} from './app.controller.js';
-import {
-  AppService,
-} from './app.service.js';
-import {
   AuthController,
 } from './auth/auth.controller.js';
 import {
@@ -35,6 +29,7 @@ import {
   NoteService,
 } from './note/note.service.js';
 
+
 @Module(
   {
     imports: [
@@ -47,12 +42,10 @@ import {
       ),
     ],
     controllers: [
-      AppController,
       AuthController,
       NoteController,
     ],
     providers: [
-      AppService,
       AuthService,
       JwtGuard,
       CsrfGuard,
@@ -61,5 +54,8 @@ import {
     ],
   },
 )
+
+
 export class AppModule
-{}
+{
+}
