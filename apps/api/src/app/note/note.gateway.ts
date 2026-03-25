@@ -16,6 +16,7 @@ import {
   NoteService,
 } from './note.service.js';
 
+
 @WebSocketGateway(
   {
     cors: {
@@ -30,7 +31,9 @@ export class NoteGateway
 
   constructor(
     private noteService: NoteService,
-  ) {}
+  ) {
+  }
+
 
   @SubscribeMessage(
     'joinNote',
@@ -40,7 +43,7 @@ export class NoteGateway
     ) noteId: number,
     @ConnectedSocket(
     ) client: Socket,
-  ) {
+  ): void {
     client.join(
       `note:${noteId}`,
     );
@@ -54,7 +57,7 @@ export class NoteGateway
     ) event: NoteUpdateEvent,
     @ConnectedSocket(
     ) client: Socket,
-  ) {
+  ): Promise<void> {
     await this.noteService.updateContent(
       event.noteId,
       event.content,

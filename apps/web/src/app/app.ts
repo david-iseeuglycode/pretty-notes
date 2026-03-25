@@ -5,6 +5,7 @@ import {
   RouterModule,
 } from '@angular/router';
 
+
 @Component(
   {
     imports: [
@@ -16,4 +17,5 @@ import {
   },
 )
 export class App
-{}
+{
+}

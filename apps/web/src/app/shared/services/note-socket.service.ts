@@ -9,6 +9,7 @@ import {
   NoteUpdateEvent,
 } from '@pretty-notes/shared';
 
+
 @Injectable(
   {
     providedIn: 'root',
@@ -18,7 +19,9 @@ export class NoteSocketService
 {
   private socket: Socket = io(
     {
-      transports: ['websocket'],
+      transports: [
+        'websocket',
+      ],
       autoConnect: false,
     },
   );

@@ -11,6 +11,7 @@ import {
   Request,
 } from 'express';
 
+
 @Injectable(
 )
 export class JwtGuard
@@ -18,7 +19,9 @@ implements CanActivate
 {
   constructor(
     private jwt: JwtService,
-  ) {}
+  ) {
+  }
+
 
   canActivate(
     ctx: ExecutionContext,

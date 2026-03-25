@@ -16,6 +16,15 @@ import {
   User,
 } from '@pretty-notes/prisma';
 
+
+export interface AuthPayload
+{
+    token: string;
+    csrfToken: string;
+    user: User;
+}
+
+
 @Injectable(
 )
 export class AuthService
@@ -23,15 +32,13 @@ export class AuthService
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
-  ) {}
+  ) {
+  }
+
 
   async register(
     dto: LoginDto,
-  ): Promise<{
-    token: string;
-    csrfToken: string;
-    user: User;
-  }> {
+  ): Promise<AuthPayload> {
     const hashed = await bcrypt.hash(
       dto.password,
       10,
@@ -42,7 +49,7 @@ export class AuthService
           email: dto.email,
           password: hashed,
         },
-      }
+      },
     );
 
     return this.buildCookiePayload(
@@ -52,17 +59,13 @@ export class AuthService
 
   async login(
     dto: LoginDto,
-  ): Promise<{
-    token: string;
-    csrfToken: string;
-    user: User;
-  }> {
+  ): Promise<AuthPayload> {
     const user = await this.prisma.user.findUnique(
       {
         where: {
           email: dto.email,
         },
-      }
+      },
     );
 
     if (
@@ -84,13 +87,10 @@ export class AuthService
     );
   }
 
+
   private buildCookiePayload(
     user: User,
-  ): {
-    token: string;
-    csrfToken: string;
-    user: User;
-  } {
+  ): AuthPayload {
     const csrfToken = crypto.randomUUID(
     );
     const token = this.jwt.sign(

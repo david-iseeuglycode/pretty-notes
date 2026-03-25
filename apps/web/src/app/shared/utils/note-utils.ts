@@ -3,6 +3,7 @@ import {
     UserDto,
 } from '@pretty-notes/shared';
 
+
 export function createdBy(
     note: NoteDto,
     user: UserDto,

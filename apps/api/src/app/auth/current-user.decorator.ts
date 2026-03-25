@@ -6,12 +6,15 @@ import {
   Request,
 } from 'express';
 
+
 export interface JwtUser
 {
   sub: number;
   email: string;
   csrfToken: string;
 }
+
+
 export const CurrentUser = createParamDecorator(
   (
     _: unknown,

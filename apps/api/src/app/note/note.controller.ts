@@ -7,6 +7,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import type {
+  NoteDto,
+  UserDto,
+  UserNoteConfigurationDto,
+} from '@pretty-notes/shared';
 import {
   JwtGuard,
 } from '../auth/jwt.guard.js';
@@ -23,6 +28,7 @@ import type {
   JwtUser,
 } from '../auth/current-user.decorator.js';
 
+
 @Controller(
   'notes',
 )
@@ -33,14 +39,16 @@ export class NoteController
 {
   constructor(
     private noteService: NoteService,
-  ) {}
+  ) {
+  }
+
 
   @Get(
   )
   findAll(
     @CurrentUser(
     ) user: JwtUser,
-  ) {
+  ): Promise<NoteDto[]> {
     return this.noteService.findAllForUser(
       user.sub,
     );
@@ -57,7 +65,7 @@ export class NoteController
     @Body(
       'title',
     ) title: string,
-  ) {
+  ): Promise<NoteDto> {
     return this.noteService.create(
       user.sub,
       title,
@@ -74,7 +82,7 @@ export class NoteController
       'id',
       ParseIntPipe,
     ) id: number,
-  ) {
+  ): Promise<NoteDto> {
     return this.noteService.findOne(
       id,
       user.sub,
@@ -91,7 +99,7 @@ export class NoteController
       'id',
       ParseIntPipe,
     ) id: number,
-  ) {
+  ): Promise<UserDto[]> {
     return this.noteService.getCollaborators(
       id,
       user.sub,
@@ -114,7 +122,7 @@ export class NoteController
     @Body(
       'email'
     ) email: string,
-  ) {
+  ): Promise<UserNoteConfigurationDto> {
     return this.noteService.addCollaborator(
       id,
       user.sub,

@@ -22,10 +22,12 @@ import {
   JwtGuard,
 } from './jwt.guard.js';
 
+
 const COOKIE_DEFAULTS = {
   sameSite: 'strict' as const,
   path: '/',
 };
+
 
 @Controller(
   'auth',
@@ -34,7 +36,9 @@ export class AuthController
 {
   constructor(
     private authService: AuthService
-  ) {}
+  ) {
+  }
+
 
   @Post(
     'register',
@@ -151,6 +155,7 @@ export class AuthController
     };
   }
 
+
   private setCookies(
     res: Response,
     token: string,
@@ -162,7 +167,7 @@ export class AuthController
       {
         ...COOKIE_DEFAULTS,
         httpOnly: true,
-      }
+      },
     );
     res.cookie(
       'csrf_token',
@@ -170,7 +175,7 @@ export class AuthController
       {
         ...COOKIE_DEFAULTS,
         httpOnly: false,
-      }
+      },
     );
   }
 }

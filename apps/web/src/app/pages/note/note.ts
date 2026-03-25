@@ -27,6 +27,7 @@ import {
   createdBy,
 } from '../../shared/utils/note-utils';
 
+
 @Component(
   {
     selector: 'pn-note',
@@ -59,12 +60,15 @@ implements OnInit
   private isRemoteUpdate = false;
   protected createdBy = createdBy;
 
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private socket: NoteSocketService,
     public auth: AuthService,
-  ) {}
+  ) {
+  }
+
 
   ngOnInit(
   ): void {
@@ -242,6 +246,7 @@ implements OnInit
       this.beforeUnloadHandler,
     );
   }
+
 
   private beforeUnloadHandler = (
   ): void => {

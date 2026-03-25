@@ -2,6 +2,7 @@ import {
   UserDto,
 } from './user.dto.js';
 
+
 export interface CreateNoteDto
 {
   title: string;

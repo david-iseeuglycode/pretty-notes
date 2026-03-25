@@ -4,23 +4,29 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  Prisma,
   PrismaService,
 } from '@pretty-notes/prisma';
 import type {
   NoteDto,
+  UserDto,
+  UserNoteConfigurationDto,
 } from '@pretty-notes/shared';
+
 
 @Injectable()
 export class NoteService
 {
   constructor(
     private prisma: PrismaService,
-  ) {}
+  ) {
+  }
+
 
   async findOne(
     id: number,
     userId: number,
-  ) {
+  ): Promise<NoteDto> {
     const note = await this.prisma.note.findFirst(
       {
         where: {
@@ -49,12 +55,14 @@ export class NoteService
       );
     }
 
-    return note;
+    return this.toNoteDto(
+      note,
+    );
   }
 
   async findAllForUser(
     userId: number,
-  ) {
+  ): Promise<NoteDto[]> {
     const notes = await this.prisma.note.findMany(
       {
         where: {
@@ -79,14 +87,18 @@ export class NoteService
       },
     );
 
-    return notes;
+    return notes.map(
+      n => this.toNoteDto(
+        n,
+      ),
+    );
   }
 
-  create(
+  async create(
     userId: number,
     title: string,
-  ) {
-    return this.prisma.note.create(
+  ): Promise<NoteDto> {
+    const note = await this.prisma.note.create(
       {
         data: {
           title,
@@ -109,13 +121,17 @@ export class NoteService
         },
       },
     );
+
+    return this.toNoteDto(
+      note,
+      );
   }
 
-  updateContent(
+  async updateContent(
     id: number,
     content: string,
-  ) {
-    return this.prisma.note.update(
+  ): Promise<void> {
+    await this.prisma.note.update(
       {
         where: {
           id,
@@ -130,7 +146,7 @@ export class NoteService
   async getCollaborators(
     noteId: number,
     userId: number,
-  ) {
+  ): Promise<UserDto[]> {
     const note = await this.prisma.note.findFirst(
       {
         where: {
@@ -171,15 +187,9 @@ export class NoteService
     );
 
     return configs.map(
-      (
-        c: {
-          user: {
-            id: number;
-            email: string;
-            createdAt: Date;
-          };
-        }
-      ) => c.user,
+      c => this.toUserDto(
+        c.user,
+      ),
     );
   }
 
@@ -187,7 +197,7 @@ export class NoteService
     noteId: number,
     requestingUserId: number,
     email: string,
-  ) {
+  ): Promise<UserNoteConfigurationDto> {
     const note = await this.prisma.note.findFirst(
       {
         where: {
@@ -217,7 +227,7 @@ export class NoteService
       );
     }
 
-    return this.prisma.userNoteConfiguration.create(
+    const userNoteConfig = await this.prisma.userNoteConfiguration.create(
       {
         data: {
           userId: newUser.id,
@@ -225,5 +235,54 @@ export class NoteService
         },
       },
     );
+
+    return userNoteConfig;
+  }
+
+
+  private toNoteDto(
+    notePayload: Prisma.NoteGetPayload<{
+      include: {
+        creator: {
+          select: {
+            id: true;
+            email: true;
+            createdAt: true;
+          };
+        };
+      };
+    }>,
+  ): NoteDto {
+    const user: UserDto = this.toUserDto(
+      notePayload.creator,
+    );
+
+    return {
+      id: notePayload.id,
+      title: notePayload.title,
+      content: notePayload.content,
+      createdAt: notePayload.createdAt.toISOString(
+      ),
+      updatedAt: notePayload.updatedAt.toISOString(
+      ),
+      creator: user,
+    };
+  }
+
+  private toUserDto(
+    userPayload: Prisma.UserGetPayload<{
+      select: {
+        id: true;
+        email: true;
+        createdAt: true;
+      };
+    }>,
+  ): UserDto {
+    return {
+      id: userPayload.id,
+      email: userPayload.email,
+      createdAt: userPayload.createdAt.toISOString(
+      ),
+    }
   }
 }

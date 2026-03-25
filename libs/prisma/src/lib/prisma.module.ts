@@ -6,6 +6,7 @@ import {
   PrismaService,
 } from './prisma.service.js';
 
+
 @Global(
 )
 @Module(
@@ -19,4 +20,5 @@ import {
   },
 )
 export class PrismaModule
-{}
+{
+}

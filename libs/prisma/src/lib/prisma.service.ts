@@ -11,9 +11,10 @@ import {
   PrismaClient,
 } from '../generated/prisma/client.js';
 
+
 function parseDatabaseUrl(
   url: string,
-) {
+) { // return type ommitted
   const withoutProtocol = url.replace(
     /^sqlserver:\/\//,
     '',
@@ -56,13 +57,14 @@ function parseDatabaseUrl(
 @Injectable(
 )
 export class PrismaService
-  extends PrismaClient
-  implements OnModuleInit
-  , OnModuleDestroy
+extends PrismaClient
+implements OnModuleInit
+, OnModuleDestroy
 {
   private readonly logger = new Logger(
     PrismaService.name,
   );
+
 
   constructor(
   ) {
@@ -79,8 +81,9 @@ export class PrismaService
     );
   }
 
+
   async onModuleInit(
-  ) {
+  ): Promise<void> {
     try {
       await this.$connect(
       );
@@ -95,7 +98,7 @@ export class PrismaService
   }
 
   async onModuleDestroy(
-  ) {
+  ): Promise<void> {
     await this.$disconnect(
     );
   }

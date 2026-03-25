@@ -21,6 +21,7 @@ import {
   AuthService,
 } from './shared/services/auth.service';
 
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(

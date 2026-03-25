@@ -2,6 +2,7 @@ import {
   HttpInterceptorFn,
 } from '@angular/common/http';
 
+
 function getCsrfToken(
 ): string | null {
   const match = document.cookie.match(
@@ -14,6 +15,7 @@ function getCsrfToken(
     )
     : null;
 }
+
 
 export const csrfInterceptor: HttpInterceptorFn = (
   req,
