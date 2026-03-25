@@ -17,9 +17,7 @@ import {
   firstValueFrom,
 } from 'rxjs';
 import {
-  LoginDto,
   NoteDto,
-  RegisterDto,
 } from '@pretty-notes/shared';
 import {
   AuthService,
@@ -48,11 +46,6 @@ implements OnInit
     Router,
   );
 
-  mode: 'login' | 'register' = 'login';
-  email = '';
-  password = '';
-  error = '';
-
   notes = signal<NoteDto[]>(
     [],
   );
@@ -63,32 +56,6 @@ implements OnInit
     if (this.auth.currentUser()) {
       this.loadNotes(
       );
-    }
-  }
-
-  async submit(
-  ): Promise<void> {
-    this.error = '';
-    const dto: LoginDto | RegisterDto = {
-      email: this.email,
-      password: this.password,
-    };
-    try {
-      if (this.mode === 'login') {
-        await this.auth.login(
-          dto,
-        );
-      } else {
-        await this.auth.register(
-          dto,
-        );
-      }
-      this.loadNotes(
-      );
-    } catch {
-      this.error = this.mode === 'login'
-        ? 'Invalid email or password.'
-        : 'Registration failed.';
     }
   }
 
@@ -138,12 +105,6 @@ implements OnInit
         '/notes',
         id,
       ],
-    );
-  }
-
-  logout(
-  ): void {
-    this.auth.logout(
     );
   }
 }
