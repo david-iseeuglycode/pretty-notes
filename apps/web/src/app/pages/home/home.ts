@@ -31,7 +31,7 @@ import {
     imports: [
       FormsModule,
     ],
-  }
+  },
 )
 export class HomePage
 implements OnInit

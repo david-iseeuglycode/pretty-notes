@@ -7,7 +7,7 @@ import {
   {
     selector: 'pn-not-found',
     templateUrl: './not-found.html',
-  }
+  },
 )
 export class NotFoundPage
 {
