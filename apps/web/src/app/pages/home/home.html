@@ -2,14 +2,19 @@
   <div>
     <h2>Your notes</h2>
 
-    @if (notes().length === 0) {
-      <p>No notes yet.</p>
+    @if (loading() === true)
+    {
+      <p>Loading...</p>
     } @else {
-      <ul>
-        @for (note of notes(); track note.id) {
-          <li><button (click)="openNote(note.id)">{{ note.title }}</button></li>
-        }
-      </ul>
+      @if (notes().length === 0) {
+        <p>No notes yet.</p>
+      } @else {
+        <ul>
+          @for (note of notes(); track note.id) {
+            <li><button (click)="openNote(note.id)">{{ note.title }}</button></li>
+          }
+        </ul>
+      }
     }
 
     <h3>New note</h3>

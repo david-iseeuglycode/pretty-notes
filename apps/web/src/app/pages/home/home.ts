@@ -1,7 +1,7 @@
 import {
   Component,
+  effect,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -34,7 +34,6 @@ import {
   },
 )
 export class HomePage
-implements OnInit
 {
   auth = inject(
     AuthService,
@@ -49,26 +48,44 @@ implements OnInit
   notes = signal<NoteDto[]>(
     [],
   );
+  loading = signal<boolean>(
+    false,
+  );
   newNoteTitle = '';
 
-  ngOnInit(
-  ): void {
-    if (this.auth.currentUser()) {
-      this.loadNotes(
-      );
-    }
+
+  constructor(
+  ) {
+    effect(
+      (
+      ) => {
+        if (this.auth.currentUser()) {
+          this.loadNotes(
+          );
+        }
+      }
+    );
   }
+
 
   loadNotes(
   ): void {
+    this.loading.set(
+      true,
+    );
     this.http.get<NoteDto[]>(
       '/api/notes',
     ).subscribe(
       (
         notes,
-      ) => this.notes.set(
-        notes,
-      )
+      ) => {
+        this.notes.set(
+          notes,
+        );
+        this.loading.set(
+          false,
+        );
+      }
     );
   }
 
