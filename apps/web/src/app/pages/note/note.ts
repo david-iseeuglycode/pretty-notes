@@ -1,5 +1,6 @@
 import {
   Component,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -55,20 +56,23 @@ implements OnInit
   collaboratorError = signal<string | null>(
     null,
   );
+  private route = inject(
+    ActivatedRoute,
+  );
+  private http = inject(
+    HttpClient,
+  );
+  private socket = inject(
+    NoteSocketService,
+  );
+  private auth = inject(
+    AuthService,
+  );
 
   private noteId = 0;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private isRemoteUpdate = false;
   protected createdBy = createdBy;
-
-
-  constructor(
-    private route: ActivatedRoute,
-    private http: HttpClient,
-    private socket: NoteSocketService,
-    public auth: AuthService,
-  ) {
-  }
 
 
   ngOnInit(
