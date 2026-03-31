@@ -2,11 +2,14 @@ import {
   Component,
   computed,
   DOCUMENT,
+  effect,
   HostListener,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
+import {
+  takeUntilDestroyed,
+} from '@angular/core/rxjs-interop';
 import {
   FormsModule,
 } from '@angular/forms';
@@ -41,10 +44,19 @@ import {
   },
 )
 export class App
-implements OnInit
 {
   auth = inject(
     AuthService,
+  );
+  darkMode = signal<boolean>(
+    false,
+  );
+  darkModeMenuChoice = computed(
+    (
+    ): string => this.darkMode(
+    )
+      ? 'Light'
+      : 'Dark'
   );
   private router = inject(
     Router,
@@ -95,16 +107,28 @@ implements OnInit
   );
 
   mode: 'login' | 'register' = 'login';
-  theme: 'light' | 'dark' = 'light';
   hideNav: boolean = true;
   email = '';
   password = '';
   error = '';
 
 
-  ngOnInit(
-  ): void {
-    this.router.events.subscribe(
+  constructor(
+  ) {
+    effect(
+      (
+      ) => this.doc.documentElement.setAttribute(
+        'data-theme',
+        this.darkMode(
+        )
+          ? 'dark'
+          : 'light',
+      )
+    );
+    this.router.events.pipe(
+      takeUntilDestroyed(
+      ),
+    ).subscribe(
       e => {
         if (
           e instanceof NavigationEnd
@@ -114,15 +138,9 @@ implements OnInit
           );
         }
       }
-    )
+    );
   }
 
-  get otherTheme(
-  ): string {
-    return this.theme === 'light'
-      ? 'Dark'
-      : 'Light'
-  }
 
   async submit(
   ): Promise<void> {
@@ -166,22 +184,10 @@ implements OnInit
     );
   }
 
-  switchTheme(
-  ): void {
-    this.theme = this.theme === 'light'
-      ? 'dark'
-      : 'light';
-
-    this.doc.documentElement.setAttribute(
-      'data-theme',
-      this.theme,
-    );
-  }
-
   openMenu(
     e: Event,
   ): void {
-    this.hideNav = false;
+    this.hideNav = !this.hideNav;
 
     e.stopPropagation(
     );
