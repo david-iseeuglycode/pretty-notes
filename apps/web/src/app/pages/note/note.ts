@@ -13,6 +13,7 @@ import {
 } from '@angular/common/http';
 import {
   ActivatedRoute,
+  Router,
 } from '@angular/router';
 import {
   NoteDto,
@@ -56,8 +57,14 @@ implements OnInit
   collaboratorError = signal<string | null>(
     null,
   );
+  deleteError = signal<string | null>(
+    null,
+  );
   private route = inject(
     ActivatedRoute,
+  );
+  private router = inject(
+    Router,
   );
   private http = inject(
     HttpClient,
@@ -153,6 +160,34 @@ implements OnInit
     return !!user
       && !!note
       && note.creator.id === user.id;
+  }
+
+  delete(
+  ): void {
+    this.deleteError.set(
+      null,
+    );
+    this.http.delete(
+      `/api/notes/${this.noteId}`,
+    ).subscribe(
+      {
+        next: (
+        ) => {
+          this.router.navigate(
+            [
+              '/',
+            ],
+          );
+        },
+        error: (
+          err,
+        ) => {
+          this.deleteError.set(
+            err.error?.message ?? 'Failed to delete note',
+          );
+        }
+      }
+    );
   }
 
   addCollaborator(

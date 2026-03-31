@@ -1,5 +1,8 @@
 @if (note(); as n) {
-  <h1>{{ n.title }}</h1>
+  <h1>{{ n.title }} <button (click)="delete()">🗑</button></h1>
+  @if (deleteError()) {
+    <p class="error">{{ deleteError() }}</p>
+  }
   <textarea
     [ngModel]="n.content"
     (ngModelChange)="onContentChange($event)"></textarea>
@@ -31,12 +34,12 @@
       </form>
 
       @if (collaboratorError()) {
-        <p>{{ collaboratorError() }}</p>
+        <p class="error">{{ collaboratorError() }}</p>
       }
     }
   </section>
 } @else if (error()) {
-  <p>{{ error() }}</p>
+  <p class="error">{{ error() }}</p>
 } @else {
   <p>Loading...</p>
 }
