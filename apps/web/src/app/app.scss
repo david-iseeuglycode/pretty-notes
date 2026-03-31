@@ -1,0 +1,31 @@
+.main {
+  position: relative;
+}
+
+.frame {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hamburger {
+  font-size: large;
+}
+
+.hideNav {
+  display: none;
+}
+
+nav {
+  background-color: var(--color-menu);
+  position: absolute;
+  top: 40px;
+  right: 0px;
+  padding: 10px;
+}
+
+em {
+  font-style: italic;
+}
