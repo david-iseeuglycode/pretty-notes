@@ -32,6 +32,7 @@ import {
   {
     selector: 'pn-note',
     templateUrl: './note.html',
+    styleUrl: './note.scss',
     imports: [
       FormsModule,
     ],
@@ -114,7 +115,9 @@ implements OnInit
           content,
         },
       ) => {
-        if (this.debounceTimer) {
+        if (
+          this.debounceTimer
+        ) {
           return;
         }
 
@@ -122,7 +125,9 @@ implements OnInit
         const current = this.note(
         );
 
-        if (current) {
+        if (
+          current
+        ) {
           this.note.set(
             {
               ...current,
@@ -151,7 +156,9 @@ implements OnInit
     const email = this.newCollaboratorEmail.trim(
     );
 
-    if (!email) {
+    if (
+      !email
+    ) {
       return;
     }
 
@@ -162,7 +169,7 @@ implements OnInit
       `/api/notes/${this.noteId}/collaborators`,
       {
         email,
-      }
+      },
     ).subscribe(
       {
         next: (
@@ -185,7 +192,9 @@ implements OnInit
   onContentChange(
     content: string,
   ): void {
-    if (this.isRemoteUpdate) {
+    if (
+      this.isRemoteUpdate
+    ) {
       this.isRemoteUpdate = false;
 
       return;
@@ -194,7 +203,9 @@ implements OnInit
     const current = this.note(
     );
 
-    if (!current) {
+    if (
+      !current
+    ) {
       return;
     }
 
@@ -205,7 +216,9 @@ implements OnInit
       },
     );
 
-    if (this.debounceTimer) {
+    if (
+      this.debounceTimer
+    ) {
       clearTimeout(
         this.debounceTimer,
       );
@@ -218,7 +231,9 @@ implements OnInit
         const n = this.note(
         );
 
-        if (n) {
+        if (
+          n
+        ) {
           this.socket.sendUpdate(
             {
               noteId: n.id,
@@ -233,7 +248,9 @@ implements OnInit
 
   ngOnDestroy(
   ): void {
-    if (this.debounceTimer) {
+    if (
+      this.debounceTimer
+    ) {
       clearTimeout(
         this.debounceTimer,
       );

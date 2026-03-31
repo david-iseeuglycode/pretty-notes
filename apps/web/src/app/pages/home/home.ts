@@ -59,7 +59,10 @@ export class HomePage
     effect(
       (
       ) => {
-        if (this.auth.currentUser()) {
+        if (
+          this.auth.currentUser(
+          )
+        ) {
           this.loadNotes(
           );
         }
@@ -91,7 +94,10 @@ export class HomePage
 
   async createNote(
   ): Promise<void> {
-    if (!this.newNoteTitle.trim()) {
+    if (
+      !this.newNoteTitle.trim(
+      )
+    ) {
       return;
     }
     const note = await firstValueFrom(
@@ -103,7 +109,9 @@ export class HomePage
       ),
     );
 
-    if (note) {
+    if (
+      note
+    ) {
       this.newNoteTitle = '';
       this.router.navigate(
         [
