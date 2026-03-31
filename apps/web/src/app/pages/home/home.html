@@ -1,6 +1,6 @@
 @if (auth.currentUser(); as user) {
   <div>
-    <h2>Your notes</h2>
+    <h2 class="notes_heading">Your notes</h2>
 
     @if (loading() === true)
     {
@@ -9,16 +9,23 @@
       @if (notes().length === 0) {
         <p>No notes yet.</p>
       } @else {
-        <ul>
+        <ul class="notes_list">
           @for (note of notes(); track note.id) {
-            <li><button (click)="openNote(note.id)">{{ note.title }}</button></li>
+            <li><button (click)="openNote(note.id)" title="{{ preview(note.content, 20) }}">{{ note.title }}</button></li>
           }
         </ul>
       }
     }
 
     <h3>New note</h3>
-    <input [(ngModel)]="newNoteTitle" placeholder="Title" />
-    <button (click)="createNote()">Create</button>
+    <form (ngSubmit)="createNote()">
+      <input
+        [(ngModel)]="newNoteTitle"
+        name="noteTitle"
+        placeholder="Title" />
+      <button
+        [disabled]="creating()"
+        type="submit">Create</button>
+    </form>
   </div>
 }

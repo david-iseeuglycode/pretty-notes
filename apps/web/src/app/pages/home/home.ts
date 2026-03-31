@@ -28,6 +28,7 @@ import {
   {
     selector: 'pn-home',
     templateUrl: './home.html',
+    styleUrl: './home.scss',
     imports: [
       FormsModule,
     ],
@@ -37,6 +38,9 @@ export class HomePage
 {
   auth = inject(
     AuthService,
+  );
+  creating = signal<boolean>(
+    false,
   );
   private http = inject(
     HttpClient,
@@ -100,6 +104,9 @@ export class HomePage
     ) {
       return;
     }
+    this.creating.set(
+      true,
+    );
     const note = await firstValueFrom(
       this.http.post<NoteDto>(
         '/api/notes',
@@ -120,6 +127,10 @@ export class HomePage
         ],
       );
     }
+
+    this.creating.set(
+      false,
+    );
   }
 
   openNote(
@@ -131,5 +142,16 @@ export class HomePage
         id,
       ],
     );
+  }
+
+  preview(
+    text: string,
+    maxLength: number,
+  ): string {
+    return text.length === 0
+      ? "Empty note"
+      : text.length > maxLength
+        ? `${text.substring(0, maxLength)}...`
+        : text;
   }
 }
