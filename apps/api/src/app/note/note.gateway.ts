@@ -29,6 +29,7 @@ export class NoteGateway
   @WebSocketServer(
   ) server!: Server;
 
+
   constructor(
     private noteService: NoteService,
   ) {

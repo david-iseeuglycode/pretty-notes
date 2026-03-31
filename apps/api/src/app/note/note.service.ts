@@ -127,6 +127,34 @@ export class NoteService
       );
   }
 
+  async delete(
+    noteId: number,
+    requestingUserId: number,
+  ): Promise<void> {
+    const note = await this.prisma.note.findFirst(
+      {
+        where: {
+          id: noteId,
+          createdBy: requestingUserId,
+        },
+      },
+    );
+
+    if (!note) {
+      throw new ForbiddenException(
+        'Only the note creator can delete a note',
+      );
+    }
+
+    await this.prisma.note.delete(
+      {
+        where: {
+          id: noteId,
+        }
+      }
+    );
+  }
+
   async updateContent(
     id: number,
     content: string,

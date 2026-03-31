@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -50,6 +51,26 @@ export class NoteController
     ) user: JwtUser,
   ): Promise<NoteDto[]> {
     return this.noteService.findAllForUser(
+      user.sub,
+    );
+  }
+
+  @Delete(
+    ':id'
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  delete(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+  ): Promise<void> {
+    return this.noteService.delete(
+      id,
       user.sub,
     );
   }
