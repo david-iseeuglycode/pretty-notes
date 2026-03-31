@@ -66,27 +66,28 @@ implements OnInit
         )
       ) {
         items.push(
-          new MenuItem(
-            'Home',
-            (
+          {
+            'name': 'Home',
+            'callback': (
               e: Event,
             ): void => this.goHome(
             ),
-            this.currentUrl(
+            'active': this.currentUrl(
             ) !== '/',
-          )
+          }
         );
       }
 
       items.push(
-        new MenuItem(
-          `this.otherTheme theme`,
-          (
+        {
+          'name': `${this.darkModeMenuChoice()} theme`,
+          'callback': (
             e: Event,
-          ): void => this.switchTheme(
+          ): void => this.darkMode.set(
+            !this.darkMode()
           ),
-          true,
-        )
+          'active': true,
+        }
       );
 
       return items;

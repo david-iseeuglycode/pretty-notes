@@ -4,16 +4,13 @@ import {
 } from "@angular/core";
 
 
-export class MenuItem
+export interface MenuItem
 {
-  constructor(
-    readonly name: string,
-    readonly callback: (
-      e: Event
-    ) => void,
-    readonly active: boolean,
-  ) {
-  }
+  readonly name: string;
+  readonly callback: (
+    e: Event
+  ) => void;
+  readonly active: boolean;
 }
 
 @Component(
