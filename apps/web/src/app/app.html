@@ -1,42 +1,62 @@
-@if (auth.currentUser(); as user) {
-  <div>
-    <p>
-      Logged in as {{ user.email }} — <button (click)="logout()">Log out</button>
-    </p>
-  </div>
-} @else {
-  <div>
-    <h2>{{ mode === 'login' ? 'Log in' : 'Create account' }}</h2>
-
-    @if (error) {
-      <p>{{ error }}</p>
-    }
-
-    <form (ngSubmit)="submit()">
-      <div>
-        <label>Email
-          <input type="email" [(ngModel)]="email" name="email" required/>
-        </label>
-      </div>
-      <div>
-        <label>Password
-          <input type="password" [(ngModel)]="password" name="password" required/>
-        </label>
-      </div>
-      <button type="submit">
-        {{ mode === 'login' ? 'Log in' : 'Register' }}
-      </button>
-    </form>
-
-    @if (mode === 'login') {
-      <p>No account?
-        <button (click)="mode = 'register'">Register</button>
+<div class="main">
+  <div class="frame">
+    @if (auth.currentUser(); as user) {
+      <p>
+        {{ user.email }} — <button (click)="logout()">Log out</button>
       </p>
     } @else {
-      <p>Already have an account?
-        <button (click)="mode = 'login'">Log in</button>
-      </p>
+      <div>
+        <h2>{{ mode === 'login' ? 'Log in' : 'Create account' }}</h2>
+
+        @if (error) {
+          <p>{{ error }}</p>
+        }
+
+        <form (ngSubmit)="submit()">
+          <div>
+            <label>Email
+              <input type="email" [(ngModel)]="email" name="email" required />
+            </label>
+          </div>
+          <div>
+            <label>Password
+              <input type="password" [(ngModel)]="password" name="password" required />
+            </label>
+          </div>
+          <button type="submit">
+            {{ mode === 'login' ? 'Log in' : 'Register' }}
+          </button>
+        </form>
+
+        @if (mode === 'login') {
+          <p>No account?
+            <button (click)="mode = 'register'">Register</button>
+          </p>
+        } @else {
+          <p>Already have an account?
+            <button (click)="mode = 'login'">Log in</button>
+          </p>
+        }
+      </div>
     }
+    <button class="hamburger" (click)="openMenu($event)">≡</button>
   </div>
-}
-<router-outlet></router-outlet>
+  <nav [class.hideNav]="hideNav">
+    <ul>
+      @for (menuItem of menuItems(); track menuItem.name) {
+        <li>
+          @if (menuItem.active) {
+            <button (click)="menuItem.callback($event)">
+              <pn-menu-item [menuItem]="menuItem" />
+            </button>
+          } @else {
+            <em>
+              <pn-menu-item [menuItem]="menuItem" />
+            </em>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+  <router-outlet></router-outlet>
+</div>
