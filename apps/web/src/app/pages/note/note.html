@@ -1,5 +1,9 @@
 @if (note(); as n) {
-  <h1>{{ n.title }} <button (click)="delete()">🗑</button></h1>
+  <h1>{{ n.title }}
+    @if (isCreator) {
+      <button (click)="delete()">🗑</button>
+    }
+  </h1>
   @if (deleteError()) {
     <p class="error">{{ deleteError() }}</p>
   }
