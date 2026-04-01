@@ -1,5 +1,10 @@
 <div class="main">
   <div class="frame">
+    @if (!onHomePage) {
+      <button class="left"
+        (click)="goHome()">←</button>
+    }
+
     @if (auth.currentUser(); as user) {
       <p>
         {{ user.email }} — <button (click)="logout()">Log out</button>

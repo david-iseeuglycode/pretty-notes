@@ -84,8 +84,7 @@ export class App
               e: Event,
             ): void => this.goHome(
             ),
-            'active': this.currentUrl(
-            ) !== '/',
+            'active': !this.onHomePage,
           }
         );
       }
@@ -173,6 +172,12 @@ export class App
   ): void {
     this.auth.logout(
     );
+  }
+
+  get onHomePage(
+  ): boolean {
+    return this.currentUrl(
+      ) === '/';
   }
 
   goHome(
