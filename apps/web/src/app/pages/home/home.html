@@ -11,7 +11,9 @@
       } @else {
         <ul class="notes_list">
           @for (note of notes(); track note.id) {
-            <li><button (click)="openNote(note.id)" title="{{ preview(note.content, 20) }}">{{ note.title }}</button></li>
+            <li>
+              <button (click)="openNote(note.id)" title="{{ preview(note.content, 20) }}">{{ note.title }}</button>
+            </li>
           }
         </ul>
       }
