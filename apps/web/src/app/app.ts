@@ -189,7 +189,7 @@ export class App
     );
   }
 
-  openMenu(
+  toggleMenu(
     e: Event,
   ): void {
     this.hideNav = !this.hideNav;

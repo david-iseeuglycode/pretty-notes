@@ -44,9 +44,13 @@
         }
       </div>
     }
-    <button class="hamburger" (click)="openMenu($event)">≡</button>
+
+    <button class="hamburger" (click)="toggleMenu($event)">≡</button>
   </div>
-  <nav [class.hideNav]="hideNav">
+
+  <div class="nav_trapezoid" [class.hide]="hideNav"></div>
+
+  <nav [class.hide]="hideNav">
     <ul>
       @for (menuItem of menuItems(); track menuItem.name) {
         <li>
