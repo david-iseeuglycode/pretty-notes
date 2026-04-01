@@ -1,9 +1,12 @@
 import {
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   inject,
   OnDestroy,
   OnInit,
   signal,
+  ViewChild,
 } from '@angular/core';
 import {
   FormsModule,
@@ -44,6 +47,10 @@ export class NotePage
 implements OnInit
 , OnDestroy
 {
+  @ViewChild(
+    'titleInput'
+  ) titleInput?: ElementRef<HTMLInputElement>;
+
   note = signal<NoteDto | null>(
     null,
   );
@@ -88,6 +95,9 @@ implements OnInit
   );
   private auth = inject(
     AuthService,
+  );
+  private cdr = inject(
+    ChangeDetectorRef,
   );
 
   private noteId = 0;
@@ -180,9 +190,28 @@ implements OnInit
 
   rename(
   ): void {
+    this.saveError.set(
+      null,
+    );
     this.renaming.set(
       true,
     );
+    this.cdr.detectChanges(
+    );
+    this.titleInput?.nativeElement.focus(
+    );
+  }
+
+  cancelTitleRenaming(
+  ): void {
+    this.renaming.set(
+      false,
+    );
+    this.saveError.set(
+      null,
+    );
+    this.newTitle = this.note(
+    )?.title ?? '';
   }
 
   save(
@@ -211,7 +240,10 @@ implements OnInit
       !newTitle
     ) {
       this.saveError.set(
-        'Could not determine new title',
+        'The title can\'t be empty',
+      );
+      this.saving.set(
+        false,
       );
 
       return;
@@ -294,6 +326,9 @@ implements OnInit
 
   addCollaborator(
   ): void {
+    this.saving.set(
+      true,
+    );
     const email = this.newCollaboratorEmail.trim(
     );
 
@@ -318,12 +353,18 @@ implements OnInit
           this.newCollaboratorEmail = '';
           this.loadCollaborators(
           );
+          this.saving.set(
+            false,
+          );
         },
         error: (
           err,
         ) => {
           this.collaboratorError.set(
             err.error?.message ?? 'Failed to add collaborator',
+          );
+          this.saving.set(
+            false,
           );
         },
       },

@@ -1,12 +1,17 @@
 @if (note(); as n) {
   <div class="headerline">
     @if (renaming()) {
-      <form (ngSubmit)="save()">
+      @if (saveError()) {
+        <p class="error">{{ saveError() }}</p>
+      }
+      <form (ngSubmit)="save()" class="creator_tools">
         <div>
           <label class="invisible" for="newTitle">New title to set</label>
           <input
+            #titleInput
             type="text"
             [(ngModel)]="newTitle"
+            (keydown.escape)="cancelTitleRenaming()"
             name="newTitle"
             id="newTitle" />
         </div>
@@ -23,7 +28,7 @@
         @if (!renaming()) {
           <button
             [disabled]="renaming()"
-            (click)="renaming.set(true)">🖉</button>
+            (click)="rename()">🖉</button>
         }
 
         <button

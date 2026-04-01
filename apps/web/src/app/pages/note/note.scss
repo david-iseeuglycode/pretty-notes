@@ -5,8 +5,14 @@ textarea {
 }
 
 .headerline {
-  display: flex;
   align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.error {
+  margin-left: 10px;
+  width: 100%;
 }
 
 .creator_tools {
@@ -16,6 +22,10 @@ textarea {
 .creator_tools > button {
   font-size: x-large;
   margin-left: 10px;
+}
+
+form.creator_tools > button {
+  border: 0;
 }
 
 .headerline > form > div > input {
