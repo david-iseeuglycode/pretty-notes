@@ -124,7 +124,7 @@ export class NoteService
 
     return this.toNoteDto(
       note,
-      );
+    );
   }
 
   async delete(
@@ -156,18 +156,63 @@ export class NoteService
   }
 
   async updateContent(
-    id: number,
+    noteId: number,
     content: string,
   ): Promise<void> {
     await this.prisma.note.update(
       {
         where: {
-          id,
+          id: noteId,
         },
         data: {
           content,
         },
       },
+    );
+  }
+
+  async updateTitle(
+    noteId: number,
+    requestingUserId: number,
+    title: string,
+  ): Promise<NoteDto> {
+    const note = await this.prisma.note.findFirst(
+      {
+        where: {
+          id: noteId,
+          createdBy: requestingUserId,
+        },
+      },
+    );
+
+    if (!note) {
+      throw new ForbiddenException(
+        'Only the note creator can update the title',
+      );
+    }
+
+    const updatedNote = await this.prisma.note.update(
+      {
+        where: {
+          id: noteId,
+        },
+        data: {
+          title,
+        },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              email: true,
+              createdAt: true,
+            },
+          },
+        },
+      }
+    );
+
+    return this.toNoteDto(
+      updatedNote,
     );
   }
 

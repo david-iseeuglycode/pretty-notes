@@ -51,6 +51,9 @@ export class App
   darkMode = signal<boolean>(
     false,
   );
+  accounting = signal<boolean>(
+    false,
+  );
   darkModeMenuChoice = computed(
     (
     ): string => this.darkMode(
@@ -143,6 +146,9 @@ export class App
 
   async submit(
   ): Promise<void> {
+    this.accounting.set(
+      true,
+    );
     this.error = '';
     const dto: LoginDto | RegisterDto = {
       email: this.email,
@@ -166,6 +172,9 @@ export class App
         ? 'Invalid email or password.'
         : 'Registration failed.';
     }
+    this.accounting.set(
+      false,
+    );
   }
 
   logout(

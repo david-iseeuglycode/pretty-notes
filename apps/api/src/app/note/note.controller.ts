@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import type {
@@ -91,6 +92,30 @@ export class NoteController
       user.sub,
       title,
     );
+  }
+
+  @Put(
+    ':id',
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  updateTitle(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+    @Body(
+      'title',
+    ) newTitle: string,
+  ): Promise<NoteDto> {
+    return this.noteService.updateTitle(
+      id,
+      user.sub,
+      newTitle,
+    )
   }
 
   @Get(

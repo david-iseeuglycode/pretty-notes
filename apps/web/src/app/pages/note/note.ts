@@ -53,13 +53,27 @@ implements OnInit
   error = signal<string | null>(
     null,
   );
-  newCollaboratorEmail = '';
+  renaming = signal<boolean>(
+    false,
+  );
+  saving = signal<boolean>(
+    false,
+  );
+  deleting = signal<boolean>(
+    false,
+  );
   collaboratorError = signal<string | null>(
     null,
   );
   deleteError = signal<string | null>(
     null,
   );
+  saveError = signal<string | null>(
+    null,
+  );
+  newCollaboratorEmail = '';
+  newTitle = '';
+
   private route = inject(
     ActivatedRoute,
   );
@@ -79,6 +93,7 @@ implements OnInit
   private noteId = 0;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private isRemoteUpdate = false;
+
   protected createdBy = createdBy;
 
 
@@ -100,6 +115,7 @@ implements OnInit
           this.note.set(
             n,
           );
+          this.newTitle = n.title;
           this.socket.joinNote(
             this.noteId,
           );
@@ -162,8 +178,88 @@ implements OnInit
       && note.creator.id === user.id;
   }
 
+  rename(
+  ): void {
+    this.renaming.set(
+      true,
+    );
+  }
+
+  save(
+  ): void {
+    if (
+      !this.isCreator
+    ) {
+      this.saveError.set(
+        'Only the owner of the note can change the title',
+      );
+
+      return;
+    }
+
+    this.saving.set(
+      true,
+    );
+    this.saveError.set(
+      null,
+    );
+
+    const newTitle = this.newTitle.trim(
+    );
+
+    if (
+      !newTitle
+    ) {
+      this.saveError.set(
+        'Could not determine new title',
+      );
+
+      return;
+    }
+
+    this.http.put<NoteDto>(
+      `/api/notes/${this.noteId}`,
+      {
+        title: newTitle,
+      },
+    ).subscribe(
+      {
+        next: (
+          n,
+        ) => {
+          this.note.set(
+            n,
+          );
+          this.saving.set(
+            false,
+          );
+          this.renaming.set(
+            false,
+          );
+        },
+        error: (
+          err,
+        ) => {
+          this.newTitle = this.note()?.title ?? '';
+          this.saveError.set(
+            err.error?.message ?? 'Failed to save title',
+          );
+          this.saving.set(
+            false,
+          );
+          this.renaming.set(
+            false,
+          );
+        },
+      },
+    );
+  }
+
   delete(
   ): void {
+    this.deleting.set(
+      true,
+    );
     this.deleteError.set(
       null,
     );
@@ -178,12 +274,18 @@ implements OnInit
               '/',
             ],
           );
+          this.deleting.set(
+            false,
+          );
         },
         error: (
           err,
         ) => {
           this.deleteError.set(
             err.error?.message ?? 'Failed to delete note',
+          );
+          this.deleting.set(
+            false,
           );
         }
       }

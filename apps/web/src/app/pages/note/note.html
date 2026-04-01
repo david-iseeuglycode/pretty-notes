@@ -1,12 +1,42 @@
 @if (note(); as n) {
-  <h1>{{ n.title }}
-    @if (isCreator) {
-      <button (click)="delete()">🗑</button>
+  <div class="headerline">
+    @if (renaming()) {
+      <form (ngSubmit)="save()">
+        <div>
+          <label class="invisible" for="newTitle">New title to set</label>
+          <input
+            type="text"
+            [(ngModel)]="newTitle"
+            name="newTitle"
+            id="newTitle" />
+        </div>
+        <button
+          type="submit"
+          [disabled]="saving()">💾</button>
+      </form>
+    } @else {
+      <h1>{{ n.title }}</h1>
     }
-  </h1>
+
+    @if (isCreator) {
+      <div class="creator_tools">
+        @if (!renaming()) {
+          <button
+            [disabled]="renaming()"
+            (click)="renaming.set(true)">🖉</button>
+        }
+
+        <button
+          [disabled]="deleting()"
+          (click)="delete()">🗑</button>
+      </div>
+    }
+  </div>
+
   @if (deleteError()) {
     <p class="error">{{ deleteError() }}</p>
   }
+
   <textarea
     [ngModel]="n.content"
     (ngModelChange)="onContentChange($event)"></textarea>
@@ -29,12 +59,18 @@
 
     @if (isCreator) {
       <form (ngSubmit)="addCollaborator()">
-        <input
-          type="email"
-          [(ngModel)]="newCollaboratorEmail"
-          name="collaboratorEmail"
-          placeholder="Add collaborator by email" />
-        <button type="submit">Add</button>
+        <div>
+          <label class="invisible" for="collaboratorEmail">Collaborator to add</label>
+          <input
+            type="email"
+            [(ngModel)]="newCollaboratorEmail"
+            name="collaboratorEmail"
+            id="collaboratorEmail"
+            placeholder="Add collaborator by email" />
+        </div>
+        <button
+          type="submit"
+          [disabled]="saving()">Add</button>
       </form>
 
       @if (collaboratorError()) {

@@ -21,10 +21,14 @@
 
     <h3>New note</h3>
     <form (ngSubmit)="createNote()">
-      <input
-        [(ngModel)]="newNoteTitle"
-        name="noteTitle"
-        placeholder="Title" />
+      <div>
+        <label class="invisible" for="noteTitle">Note to add</label>
+        <input
+          [(ngModel)]="newNoteTitle"
+          name="noteTitle"
+          id="noteTitle"
+          placeholder="Title" />
+      </div>
       <button
         [disabled]="creating()"
         type="submit">Create</button>

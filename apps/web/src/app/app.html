@@ -10,36 +10,35 @@
         {{ user.email }} — <button (click)="logout()">Log out</button>
       </p>
     } @else {
-      <div>
+      <div class="account">
         <h2>{{ mode === 'login' ? 'Log in' : 'Create account' }}</h2>
 
         @if (error) {
-          <p>{{ error }}</p>
+          <p class="error">{{ error }}</p>
         }
 
         <form (ngSubmit)="submit()">
-          <div>
-            <label>Email
-              <input type="email" [(ngModel)]="email" name="email" required />
-            </label>
-          </div>
-          <div>
-            <label>Password
-              <input type="password" [(ngModel)]="password" name="password" required />
-            </label>
-          </div>
-          <button type="submit">
-            {{ mode === 'login' ? 'Log in' : 'Register' }}
-          </button>
+          <label for="email">Email</label>
+          <input type="email" [(ngModel)]="email" name="email" id="email" required />
+          <label for="password">Password</label>
+          <input type="password" [(ngModel)]="password" name="password" id="password" required />
+
+          <button
+            [disabled]="accounting()"
+            type="submit">{{ mode === 'login' ? 'Log in' : 'Register' }}</button>
         </form>
 
         @if (mode === 'login') {
           <p>No account?
-            <button (click)="mode = 'register'">Register</button>
+            <button
+              [disabled]="accounting()"
+              (click)="mode = 'register'">Register</button>
           </p>
         } @else {
           <p>Already have an account?
-            <button (click)="mode = 'login'">Log in</button>
+            <button
+              [disabled]="accounting()"
+              (click)="mode = 'login'">Log in</button>
           </p>
         }
       </div>
@@ -67,5 +66,6 @@
       }
     </ul>
   </nav>
+
   <router-outlet></router-outlet>
 </div>
