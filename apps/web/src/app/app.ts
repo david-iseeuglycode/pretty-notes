@@ -67,6 +67,15 @@ export class App
   private currentUrl = signal(
     this.router.url,
   );
+  onHomePage = computed(
+    (
+    ): boolean => {
+      let currentUrl: string = this.currentUrl(
+      );
+
+      return currentUrl === '/';
+    }
+  );
   private doc = inject(
     DOCUMENT,
   );
@@ -87,7 +96,8 @@ export class App
               e: Event,
             ): void => this.goHome(
             ),
-            'active': !this.onHomePage,
+            'active': !this.onHomePage(
+            ),
           }
         );
       }
@@ -98,21 +108,50 @@ export class App
           'callback': (
             e: Event,
           ): void => this.darkMode.set(
-            !this.darkMode()
+            !this.darkMode(
+            ),
           ),
           'active': true,
-        }
+        },
       );
 
       return items;
     }
   );
+  mode = signal<'login' | 'register'>(
+    'login',
+  );
+  loginRegisterHeader = computed(
+    (
+    ): string => {
+      return this.mode() === 'login'
+        ? 'Log in'
+        : 'Create account';
+    },
+  );
+  loginRegisterSubmit = computed(
+    (
+    ): string => {
+      return this.mode() === 'login'
+        ? 'Log in'
+        : 'Register';
+    }
+  );
+  loginRegistrationError = computed(
+    (
+    ): string => {
+      return this.mode() === 'login'
+        ? 'Invalid email or password.'
+        : 'Registration failed.';
+    }
+  );
+  hideNav = signal<boolean>(
+    true,
+  );
 
-  mode: 'login' | 'register' = 'login';
-  hideNav: boolean = true;
-  email = '';
-  password = '';
-  error = '';
+  email: string = '';
+  password: string = '';
+  error: string = '';
 
 
   constructor(
@@ -139,7 +178,7 @@ export class App
             e.url
           );
         }
-      }
+      },
     );
   }
 
@@ -157,7 +196,8 @@ export class App
 
     try {
       if (
-        this.mode === 'login'
+        this.mode(
+        ) === 'login'
       ) {
         await this.auth.login(
           dto,
@@ -168,9 +208,8 @@ export class App
         );
       }
     } catch {
-      this.error = this.mode === 'login'
-        ? 'Invalid email or password.'
-        : 'Registration failed.';
+      this.error = this.loginRegistrationError(
+      );
     }
     this.accounting.set(
       false,
@@ -181,12 +220,6 @@ export class App
   ): void {
     this.auth.logout(
     );
-  }
-
-  get onHomePage(
-  ): boolean {
-    return this.currentUrl(
-      ) === '/';
   }
 
   goHome(
@@ -201,7 +234,10 @@ export class App
   toggleMenu(
     e: Event,
   ): void {
-    this.hideNav = !this.hideNav;
+    this.hideNav.set(
+      !this.hideNav(
+      ),
+    );
 
     e.stopPropagation(
     );
@@ -212,6 +248,8 @@ export class App
   )
   closeMenu(
   ): void {
-    this.hideNav = true;
+    this.hideNav.set(
+      true,
+    );
   }
 }

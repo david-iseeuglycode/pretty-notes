@@ -64,16 +64,20 @@ form > label {
   width: 20%;
 }
 
-form > input {
+form > div.input {
   margin-bottom: 10px;
   margin-left: 10px;
   padding: 5px;
   width: calc(80% - 10px);
 }
 
-p.logout > button {
+p > button {
   text-decoration: underline;
 }
+
+form > div > input {
+  width: 100%;
+}  
 
 nav > ul > li > button {
   border-style: none;

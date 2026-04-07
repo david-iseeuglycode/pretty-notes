@@ -1,6 +1,6 @@
 <div class="main">
   <div class="frame">
-    @if (!onHomePage) {
+    @if (!onHomePage()) {
       <button class="left"
         (click)="goHome()">←</button>
     }
@@ -11,34 +11,61 @@
       </p>
     } @else {
       <div class="account">
-        <h2>{{ mode === 'login' ? 'Log in' : 'Create account' }}</h2>
+        <h2>{{ loginRegisterHeader() }}</h2>
 
         @if (error) {
           <p class="error">{{ error }}</p>
         }
 
         <form (ngSubmit)="submit()">
-          <label for="email">Email</label>
-          <input type="email" [(ngModel)]="email" name="email" id="email" required />
-          <label for="password">Password</label>
-          <input type="password" [(ngModel)]="password" name="password" id="password" required />
+          <label
+            for="email">Email</label>
+          <div class="input">
+            <input
+              #emailField="ngModel"
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              id="email"
+              email
+              required />
+            @if (emailField.touched && emailField.errors?.['email']) {
+              <small class="error">Please enter a valid email address.</small>
+            }
+          </div>
+
+          <label
+            for="password">Password</label>
+          <div class="input">
+            <input
+              #passwordField="ngModel"
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              id="password"
+              minlength="5"
+              required />
+            @if (passwordField.touched && passwordField.errors?.['minlength']) {
+              <small class="error">Password requires minimum 5 characters.</small>
+            }
+          </div>
 
           <button
-            [disabled]="accounting()"
-            type="submit">{{ mode === 'login' ? 'Log in' : 'Register' }}</button>
+            [disabled]="accounting() || emailField.invalid || passwordField.invalid"
+            type="submit">{{ loginRegisterSubmit() }}</button>
         </form>
 
-        @if (mode === 'login') {
+        @if (mode() === 'login') {
           <p>No account?
             <button
               [disabled]="accounting()"
-              (click)="mode = 'register'">Register</button>
+              (click)="mode.set('register')">Register</button>
           </p>
         } @else {
           <p>Already have an account?
             <button
               [disabled]="accounting()"
-              (click)="mode = 'login'">Log in</button>
+              (click)="mode.set('login')">Log in</button>
           </p>
         }
       </div>
@@ -47,9 +74,9 @@
     <button class="hamburger" (click)="toggleMenu($event)">≡</button>
   </div>
 
-  <div class="nav_trapezoid" [class.hide]="hideNav"></div>
+  <div class="nav_trapezoid" [class.hide]="hideNav()"></div>
 
-  <nav [class.hide]="hideNav">
+  <nav [class.hide]="hideNav()">
     <ul>
       @for (menuItem of menuItems(); track menuItem.name) {
         <li>
