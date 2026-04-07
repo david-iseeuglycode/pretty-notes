@@ -70,3 +70,12 @@ form > input {
   padding: 5px;
   width: calc(80% - 10px);
 }
+
+p.logout > button {
+  text-decoration: underline;
+}
+
+nav > ul > li > button {
+  border-style: none;
+  text-decoration: none;
+}

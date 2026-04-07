@@ -5,3 +5,8 @@
 .notes_list {
     margin-bottom: 20px;
 }
+
+.notes_list li > button {
+  border-bottom: 1px;
+  border-style: dotted;
+}

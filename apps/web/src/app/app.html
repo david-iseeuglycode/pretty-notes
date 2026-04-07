@@ -6,7 +6,7 @@
     }
 
     @if (auth.currentUser(); as user) {
-      <p>
+      <p class="logout">
         {{ user.email }} — <button (click)="logout()">Log out</button>
       </p>
     } @else {
