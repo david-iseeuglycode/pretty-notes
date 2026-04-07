@@ -340,9 +340,7 @@ export class NoteService
       throw new ForbiddenException(
         'creator can\'t unsubscribe from their own note',
       );
-    }
-
-    if (
+    } else if (
       requestingUserId !== userId
       && !requestingUserOwnsNote
     ) {
