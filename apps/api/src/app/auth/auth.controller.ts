@@ -44,8 +44,7 @@ export class AuthController
     'register',
   )
   async register(
-    @Body(
-    ) dto: LoginDto,
+    @Body() dto: LoginDto,
     @Res(
       {
         passthrough: true,
@@ -77,8 +76,7 @@ export class AuthController
     'login',
   )
   async login(
-    @Body(
-    ) dto: LoginDto,
+    @Body() dto: LoginDto,
     @Res(
       {
         passthrough: true,
@@ -133,8 +131,7 @@ export class AuthController
     'me',
   )
   me(
-    @Req(
-    ) req: Request,
+    @Req() req: Request,
   ): UserDto {
     const user = (
       req as Request & {

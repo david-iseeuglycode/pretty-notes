@@ -55,9 +55,7 @@ export class App
     false,
   );
   darkModeMenuChoice = computed(
-    (
-    ): string => this.darkMode(
-    )
+    (): string => this.darkMode()
       ? 'Light'
       : 'Dark'
   );
@@ -68,10 +66,8 @@ export class App
     this.router.url,
   );
   onHomePage = computed(
-    (
-    ): boolean => {
-      let currentUrl: string = this.currentUrl(
-      );
+    (): boolean => {
+      let currentUrl: string = this.currentUrl();
 
       return currentUrl === '/';
     }
@@ -80,24 +76,19 @@ export class App
     DOCUMENT,
   );
   menuItems = computed(
-    (
-    ): MenuItem[] => {
-      const items = [
-      ];
+    (): MenuItem[] => {
+      const items = [];
 
       if (
-        this.auth.currentUser(
-        )
+        this.auth.currentUser()
       ) {
         items.push(
           {
             'name': 'Home',
             'callback': (
               e: Event,
-            ): void => this.goHome(
-            ),
-            'active': !this.onHomePage(
-            ),
+            ): void => this.goHome(),
+            'active': !this.onHomePage(),
           }
         );
       }
@@ -108,8 +99,7 @@ export class App
           'callback': (
             e: Event,
           ): void => this.darkMode.set(
-            !this.darkMode(
-            ),
+            !this.darkMode(),
           ),
           'active': true,
         },
@@ -122,24 +112,21 @@ export class App
     'login',
   );
   loginRegisterHeader = computed(
-    (
-    ): string => {
+    (): string => {
       return this.mode() === 'login'
         ? 'Log in'
         : 'Create account';
     },
   );
   loginRegisterSubmit = computed(
-    (
-    ): string => {
+    (): string => {
       return this.mode() === 'login'
         ? 'Log in'
         : 'Register';
     }
   );
   loginRegistrationError = computed(
-    (
-    ): string => {
+    (): string => {
       return this.mode() === 'login'
         ? 'Invalid email or password.'
         : 'Registration failed.';
@@ -154,21 +141,17 @@ export class App
   error: string = '';
 
 
-  constructor(
-  ) {
+  constructor() {
     effect(
-      (
-      ) => this.doc.documentElement.setAttribute(
+      () => this.doc.documentElement.setAttribute(
         'data-theme',
-        this.darkMode(
-        )
+        this.darkMode()
           ? 'dark'
           : 'light',
-      )
+      ),
     );
     this.router.events.pipe(
-      takeUntilDestroyed(
-      ),
+      takeUntilDestroyed(),
     ).subscribe(
       e => {
         if (
@@ -183,8 +166,7 @@ export class App
   }
 
 
-  async submit(
-  ): Promise<void> {
+  async submit(): Promise<void> {
     this.accounting.set(
       true,
     );
@@ -196,8 +178,7 @@ export class App
 
     try {
       if (
-        this.mode(
-        ) === 'login'
+        this.mode() === 'login'
       ) {
         await this.auth.login(
           dto,
@@ -208,22 +189,18 @@ export class App
         );
       }
     } catch {
-      this.error = this.loginRegistrationError(
-      );
+      this.error = this.loginRegistrationError();
     }
     this.accounting.set(
       false,
     );
   }
 
-  logout(
-  ): void {
-    this.auth.logout(
-    );
+  logout(): void {
+    this.auth.logout();
   }
 
-  goHome(
-  ): void {
+  goHome(): void {
     this.router.navigate(
       [
         '/',
@@ -235,8 +212,7 @@ export class App
     e: Event,
   ): void {
     this.hideNav.set(
-      !this.hideNav(
-      ),
+      !this.hideNav(),
     );
 
     e.stopPropagation(
@@ -246,8 +222,7 @@ export class App
   @HostListener(
     'document:click',
   )
-  closeMenu(
-  ): void {
+  closeMenu(): void {
     this.hideNav.set(
       true,
     );

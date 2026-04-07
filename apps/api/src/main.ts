@@ -10,14 +10,12 @@ import {
 } from './app/app.module.js';
 
 
-async function bootstrap(
-): Promise<void> {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(
     AppModule,
   );
   app.use(
-    cookieParser(
-    ),
+    cookieParser(),
   );
   app.use(
     (
@@ -28,15 +26,13 @@ async function bootstrap(
           v: string,
         ) => void
       },
-      next: (
-      ) => void
+      next: () => void
     ) => {
       res.setHeader(
         'Cache-Control',
         'no-store',
       );
-      next(
-      );
+      next();
     }
   );
   app.setGlobalPrefix(
@@ -53,5 +49,4 @@ async function bootstrap(
   );
 }
 
-bootstrap(
-);
+bootstrap();

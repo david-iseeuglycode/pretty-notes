@@ -80,12 +80,9 @@ implements OnInit
     null,
   );
   isCreator = computed(
-    (
-    ): boolean => {
-      const user = this.auth.currentUser(
-      );
-      const note = this.note(
-      );
+    (): boolean => {
+      const user = this.auth.currentUser();
+      const note = this.note();
 
       return !!user
         && !!note
@@ -93,8 +90,7 @@ implements OnInit
     }
   );
   deleteButtonTitle = computed(
-    (
-    ): string => {
+    (): string => {
       if (
         this.isCreator()
       ) {
@@ -141,8 +137,7 @@ implements OnInit
   protected createdBy = createdBy;
 
 
-  ngOnInit(
-  ): void {
+  ngOnInit(): void {
     this.noteId = Number(
       this.route.snapshot.paramMap.get(
         'id',
@@ -163,8 +158,7 @@ implements OnInit
           this.socket.joinNote(
             this.noteId,
           );
-          this.loadCollaborators(
-          );
+          this.loadCollaborators();
           window.addEventListener(
             'beforeunload',
             this.beforeUnloadHandler,
@@ -193,8 +187,7 @@ implements OnInit
         }
 
         this.isRemoteUpdate = true;
-        const current = this.note(
-        );
+        const current = this.note();
 
         if (
           current
@@ -210,34 +203,28 @@ implements OnInit
     );
   }
 
-  rename(
-  ): void {
+  rename(): void {
     this.saveError.set(
       null,
     );
     this.renaming.set(
       true,
     );
-    this.cdr.detectChanges(
-    );
-    this.titleInput?.nativeElement.focus(
-    );
+    this.cdr.detectChanges();
+    this.titleInput?.nativeElement.focus();
   }
 
-  cancelTitleRenaming(
-  ): void {
+  cancelTitleRenaming(): void {
     this.renaming.set(
       false,
     );
     this.saveError.set(
       null,
     );
-    this.newTitle = this.note(
-    )?.title ?? '';
+    this.newTitle = this.note()?.title ?? '';
   }
 
-  save(
-  ): void {
+  save(): void {
     if (
       !this.isCreator
     ) {
@@ -255,8 +242,7 @@ implements OnInit
       null,
     );
 
-    const newTitle = this.newTitle.trim(
-    );
+    const newTitle = this.newTitle.trim();
 
     if (
       !newTitle
@@ -325,8 +311,7 @@ implements OnInit
         `/api/notes/${this.noteId}`,
       ).subscribe(
         {
-          next: (
-          ) => {
+          next: () => {
             this.router.navigate(
               [
                 '/',
@@ -349,15 +334,13 @@ implements OnInit
         }
       );
     } else {
-      const currentUserId = this.auth.currentUser(
-      )?.id;
+      const currentUserId = this.auth.currentUser()?.id;
 
       this.http.delete(
         `/api/notes/${this.noteId}/collaborators/${currentUserId}`,
       ).subscribe(
         {
-          next: (
-          ) => {
+          next: () => {
             this.router.navigate(
               [
                 '/',
@@ -382,13 +365,11 @@ implements OnInit
     }
   }
 
-  addCollaborator(
-  ): void {
+  addCollaborator(): void {
     this.saving.set(
       true,
     );
-    const email = this.newCollaboratorEmail.trim(
-    );
+    const email = this.newCollaboratorEmail.trim();
 
     if (
       !email
@@ -406,11 +387,9 @@ implements OnInit
       },
     ).subscribe(
       {
-        next: (
-        ) => {
+        next: () => {
           this.newCollaboratorEmail = '';
-          this.loadCollaborators(
-          );
+          this.loadCollaborators();
           this.saving.set(
             false,
           );
@@ -442,10 +421,8 @@ implements OnInit
       `/api/notes/${this.noteId}/collaborators/${userId}`,
     ).subscribe(
       {
-        next: (
-        ) => {
-          this.loadCollaborators(
-          );
+        next: () => {
+          this.loadCollaborators();
           this.saving.set(
             false,
           );
@@ -475,8 +452,7 @@ implements OnInit
       return;
     }
 
-    const current = this.note(
-    );
+    const current = this.note();
 
     if (
       !current
@@ -500,11 +476,9 @@ implements OnInit
     }
 
     this.debounceTimer = setTimeout(
-      (
-      ) => {
+      () => {
         this.debounceTimer = null;
-        const n = this.note(
-        );
+        const n = this.note();
 
         if (
           n
@@ -521,8 +495,7 @@ implements OnInit
     );
   }
 
-  ngOnDestroy(
-  ): void {
+  ngOnDestroy(): void {
     if (
       this.debounceTimer
     ) {
@@ -531,8 +504,7 @@ implements OnInit
       );
     }
 
-    this.socket.offNoteUpdated(
-    );
+    this.socket.offNoteUpdated();
     window.removeEventListener(
       'beforeunload',
       this.beforeUnloadHandler,
@@ -540,14 +512,11 @@ implements OnInit
   }
 
 
-  private beforeUnloadHandler = (
-  ): void => {
-    this.ngOnDestroy(
-    );
+  private beforeUnloadHandler = (): void => {
+    this.ngOnDestroy();
   };
 
-  private loadCollaborators(
-  ): void {
+  private loadCollaborators(): void {
     this.http.get<UserDto[]>(
       `/api/notes/${this.noteId}/collaborators`,
     ).subscribe(

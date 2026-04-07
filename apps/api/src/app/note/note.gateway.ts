@@ -26,8 +26,7 @@ import {
 )
 export class NoteGateway
 {
-  @WebSocketServer(
-  ) server!: Server;
+  @WebSocketServer() server!: Server;
 
 
   constructor(
@@ -40,10 +39,8 @@ export class NoteGateway
     'joinNote',
   )
   handleJoin(
-    @MessageBody(
-    ) noteId: number,
-    @ConnectedSocket(
-    ) client: Socket,
+    @MessageBody() noteId: number,
+    @ConnectedSocket() client: Socket,
   ): void {
     client.join(
       `note:${noteId}`,
@@ -54,10 +51,8 @@ export class NoteGateway
     'updateNote',
   )
   async handleUpdate(
-    @MessageBody(
-    ) event: NoteUpdateEvent,
-    @ConnectedSocket(
-    ) client: Socket,
+    @MessageBody() event: NoteUpdateEvent,
+    @ConnectedSocket() client: Socket,
   ): Promise<void> {
     await this.noteService.updateContent(
       event.noteId,

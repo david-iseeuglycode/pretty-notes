@@ -49,7 +49,9 @@ export class NoteService
       },
     );
 
-    if (!note) {
+    if (
+      !note
+    ) {
       throw new NotFoundException(
         'Note not found',
       );
@@ -140,7 +142,9 @@ export class NoteService
       },
     );
 
-    if (!note) {
+    if (
+      !note
+    ) {
       throw new ForbiddenException(
         'Only the note creator can delete a note',
       );
@@ -185,7 +189,9 @@ export class NoteService
       },
     );
 
-    if (!note) {
+    if (
+      !note
+    ) {
       throw new ForbiddenException(
         'Only the note creator can update the title',
       );
@@ -233,7 +239,9 @@ export class NoteService
       },
     );
 
-    if (!note) {
+    if (
+      !note
+    ) {
       throw new NotFoundException(
         'Note not found',
       );
@@ -285,7 +293,9 @@ export class NoteService
       },
     );
 
-    if (!note) {
+    if (
+      !note
+    ) {
       throw new ForbiddenException(
         'Only the note creator can add collaborators',
       );
@@ -299,7 +309,9 @@ export class NoteService
       },
     );
 
-    if (!newUser) {
+    if (
+      !newUser
+    ) {
       throw new NotFoundException(
         `No user found with email ${email}`,
       );
@@ -330,7 +342,9 @@ export class NoteService
       },
     );
 
-    if (!note) {
+    if (
+      !note
+    ) {
       throw new NotFoundException(
         'unknown note id',
       );
@@ -388,10 +402,8 @@ export class NoteService
       id: notePayload.id,
       title: notePayload.title,
       content: notePayload.content,
-      createdAt: notePayload.createdAt.toISOString(
-      ),
-      updatedAt: notePayload.updatedAt.toISOString(
-      ),
+      createdAt: notePayload.createdAt.toISOString(),
+      updatedAt: notePayload.updatedAt.toISOString(),
       creator: user,
     };
   }
@@ -408,8 +420,7 @@ export class NoteService
     return {
       id: userPayload.id,
       email: userPayload.email,
-      createdAt: userPayload.createdAt.toISOString(
-      ),
+      createdAt: userPayload.createdAt.toISOString(),
     }
   }
 }

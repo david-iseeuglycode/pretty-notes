@@ -3,8 +3,7 @@ import {
 } from '@angular/common/http';
 
 
-function getCsrfToken(
-): string | null {
+function getCsrfToken(): string | null {
   const match = document.cookie.match(
     /(?:^|;\s*)csrf_token=([^;]+)/,
   );
@@ -27,10 +26,11 @@ export const csrfInterceptor: HttpInterceptorFn = (
     );
   }
 
-  const token = getCsrfToken(
-  );
+  const token = getCsrfToken();
 
-  if (!token) {
+  if (
+    !token
+  ) {
     return next(
       req,
     );

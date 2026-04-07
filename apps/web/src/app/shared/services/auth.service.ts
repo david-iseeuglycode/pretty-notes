@@ -40,8 +40,7 @@ export class AuthService
   isCurrentUser(
     user: UserDto,
   ): boolean {
-    const current = this.currentUser(
-    );
+    const current = this.currentUser();
 
     return !!user
       && !!current

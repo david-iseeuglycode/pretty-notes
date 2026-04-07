@@ -25,8 +25,7 @@ export interface AuthPayload
 }
 
 
-@Injectable(
-)
+@Injectable()
 export class AuthService
 {
   constructor(
@@ -91,8 +90,7 @@ export class AuthService
   private buildCookiePayload(
     user: User,
   ): AuthPayload {
-    const csrfToken = crypto.randomUUID(
-    );
+    const csrfToken = crypto.randomUUID();
     const token = this.jwt.sign(
       {
         sub: user.id,

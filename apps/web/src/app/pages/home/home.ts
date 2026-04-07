@@ -58,25 +58,20 @@ export class HomePage
   newNoteTitle = '';
 
 
-  constructor(
-  ) {
+  constructor() {
     effect(
-      (
-      ) => {
+      () => {
         if (
-          this.auth.currentUser(
-          )
+          this.auth.currentUser()
         ) {
-          this.loadNotes(
-          );
+          this.loadNotes();
         }
       }
     );
   }
 
 
-  loadNotes(
-  ): void {
+  loadNotes(): void {
     this.loading.set(
       true,
     );
@@ -99,14 +94,15 @@ export class HomePage
   async createNote(
   ): Promise<void> {
     if (
-      !this.newNoteTitle.trim(
-      )
+      !this.newNoteTitle.trim()
     ) {
       return;
     }
+
     this.creating.set(
       true,
     );
+
     const note = await firstValueFrom(
       this.http.post<NoteDto>(
         '/api/notes',

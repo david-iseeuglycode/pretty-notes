@@ -24,8 +24,7 @@ import {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(
-    ),
+    provideBrowserGlobalErrorListeners(),
     provideRouter(
       appRoutes,
     ),
@@ -37,14 +36,12 @@ export const appConfig: ApplicationConfig = {
       ),
     ),
     provideAppInitializer(
-      (
-      ) => {
+      () => {
         const auth = inject(
           AuthService,
         );
 
-        return auth.loadCurrentUser(
-        );
+        return auth.loadCurrentUser();
       },
     ),
   ],

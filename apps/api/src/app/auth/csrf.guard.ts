@@ -9,8 +9,7 @@ import {
 } from 'express';
 
 
-@Injectable(
-)
+@Injectable()
 export class CsrfGuard
 implements CanActivate
 {
@@ -31,8 +30,7 @@ implements CanActivate
       !header
       || header !== req.user?.csrfToken
     ) {
-      throw new ForbiddenException(
-      );
+      throw new ForbiddenException();
     }
 
     return true;

@@ -12,8 +12,7 @@ import {
 } from 'express';
 
 
-@Injectable(
-)
+@Injectable()
 export class JwtGuard
 implements CanActivate
 {
@@ -31,7 +30,9 @@ implements CanActivate
     );
     const token = req.cookies?.['access_token'] as string | undefined;
 
-    if (!token) {
+    if (
+      !token
+    ) {
       throw new UnauthorizedException();
     }
 
@@ -42,8 +43,7 @@ implements CanActivate
 
       return true;
     } catch {
-      throw new UnauthorizedException(
-      );
+      throw new UnauthorizedException();
     }
   }
 }

@@ -21,6 +21,5 @@ export interface MenuItem
 )
 export class MenuItemComponent
 {
-  menuItem = input.required<MenuItem>(
-  );
+  menuItem = input.required<MenuItem>();
 }

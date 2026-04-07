@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import type {
@@ -46,11 +45,9 @@ export class NoteController
   }
 
 
-  @Get(
-  )
+  @Get()
   findAll(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
   ): Promise<NoteDto[]> {
     return this.noteService.findAllForUser(
       user.sub,
@@ -64,8 +61,7 @@ export class NoteController
     CsrfGuard,
   )
   delete(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -77,14 +73,12 @@ export class NoteController
     );
   }
 
-  @Post(
-  )
+  @Post()
   @UseGuards(
     CsrfGuard,
   )
   create(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Body(
       'title',
     ) title: string,
@@ -102,8 +96,7 @@ export class NoteController
     CsrfGuard,
   )
   updateTitle(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -123,8 +116,7 @@ export class NoteController
     ':id',
   )
   findOne(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -140,8 +132,7 @@ export class NoteController
     ':id/collaborators',
   )
   getCollaborators(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -160,8 +151,7 @@ export class NoteController
     CsrfGuard,
   )
   addCollaborator(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -184,8 +174,7 @@ export class NoteController
     CsrfGuard,
   )
   removeCollaborator(
-    @CurrentUser(
-    ) user: JwtUser,
+    @CurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe

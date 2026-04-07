@@ -29,7 +29,9 @@ export class NoteSocketService
   joinNote(
     noteId: number,
   ): void {
-    if (this.socket.connected) {
+    if (
+      this.socket.connected
+    ) {
       this.socket.emit(
         'joinNote',
         noteId,
@@ -37,8 +39,7 @@ export class NoteSocketService
     } else {
       this.socket.once(
         'connect',
-        (
-        ) => {
+        () => {
           this.socket.emit(
             'joinNote',
             noteId,
@@ -46,8 +47,7 @@ export class NoteSocketService
         },
       );
 
-      this.socket.connect(
-      );
+      this.socket.connect();
     }
   }
 
@@ -80,7 +80,6 @@ export class NoteSocketService
     this.socket.off(
       'connect',
     );
-    this.socket.disconnect(
-    );
+    this.socket.disconnect();
   }
 }
