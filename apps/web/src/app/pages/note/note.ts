@@ -48,7 +48,7 @@ implements OnInit
 , OnDestroy
 {
   @ViewChild(
-    'titleInput'
+    'titleInput',
   ) titleInput?: ElementRef<HTMLInputElement>;
 
   note = signal<NoteDto | null>(
