@@ -312,6 +312,57 @@ export class NoteService
     return userNoteConfig;
   }
 
+  async removeCollaborator(
+    noteId: number,
+    requestingUserId: number,
+    userId: number,
+  ): Promise<void> {
+    const note = await this.prisma.note.findFirst(
+      {
+        where: {
+          id: noteId,
+        },
+      },
+    );
+
+    if (!note) {
+      throw new NotFoundException(
+        'unknown note id',
+      );
+    }
+
+    const requestingUserOwnsNote = note.createdBy === requestingUserId;
+
+    if (
+      requestingUserId === userId
+      && requestingUserOwnsNote
+    ) {
+      throw new ForbiddenException(
+        'creator can\'t unsubscribe from their own note',
+      );
+    }
+
+    if (
+      requestingUserId !== userId
+      && !requestingUserOwnsNote
+    ) {
+      throw new ForbiddenException(
+        'only creator can unsubscribe another user from their own note',
+      );
+    }
+
+    await this.prisma.userNoteConfiguration.delete(
+      {
+        where: {
+          userId_noteId: {
+            userId: userId,
+            noteId: noteId,
+          },
+        },
+      }
+    );
+  }
+
 
   private toNoteDto(
     notePayload: Prisma.NoteGetPayload<{

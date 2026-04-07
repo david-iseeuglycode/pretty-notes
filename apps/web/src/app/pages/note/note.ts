@@ -295,33 +295,69 @@ implements OnInit
     this.deleteError.set(
       null,
     );
-    this.http.delete(
-      `/api/notes/${this.noteId}`,
-    ).subscribe(
-      {
-        next: (
-        ) => {
-          this.router.navigate(
-            [
-              '/',
-            ],
-          );
-          this.deleting.set(
-            false,
-          );
-        },
-        error: (
-          err,
-        ) => {
-          this.deleteError.set(
-            err.error?.message ?? 'Failed to delete note',
-          );
-          this.deleting.set(
-            false,
-          );
+
+    if (
+      this.isCreator
+    ) {
+      this.http.delete(
+        `/api/notes/${this.noteId}`,
+      ).subscribe(
+        {
+          next: (
+          ) => {
+            this.router.navigate(
+              [
+                '/',
+              ],
+            );
+            this.deleting.set(
+              false,
+            );
+          },
+          error: (
+            err,
+          ) => {
+            this.deleteError.set(
+              err.error?.message ?? 'Failed to delete note',
+            );
+            this.deleting.set(
+              false,
+            );
+          }
         }
-      }
-    );
+      );
+    } else {
+      const currentUserId = this.auth.currentUser(
+      )?.id;
+
+      this.http.delete(
+        `/api/notes/${this.noteId}/collaborators/${currentUserId}`,
+      ).subscribe(
+        {
+          next: (
+          ) => {
+            this.router.navigate(
+              [
+                '/',
+              ],
+            );
+            this.deleting.set(
+              false,
+            );
+          },
+          error: (
+            err,
+          ) => {
+            this.deleteError.set(
+              err.error?.message ?? 'Failed to unsubscribe from note',
+            );
+            this.deleting.set(
+              false,
+            );
+          }
+        }
+      );
+    }
   }
 
   addCollaborator(
@@ -362,6 +398,41 @@ implements OnInit
         ) => {
           this.collaboratorError.set(
             err.error?.message ?? 'Failed to add collaborator',
+          );
+          this.saving.set(
+            false,
+          );
+        },
+      },
+    );
+  }
+
+  removeCollaborator(
+    userId: number
+  ): void {
+    this.saving.set(
+      true,
+    );
+    this.collaboratorError.set(
+      null,
+    );
+    this.http.delete(
+      `/api/notes/${this.noteId}/collaborators/${userId}`,
+    ).subscribe(
+      {
+        next: (
+        ) => {
+          this.loadCollaborators(
+          );
+          this.saving.set(
+            false,
+          );
+        },
+        error: (
+          err,
+        ) => {
+          this.collaboratorError.set(
+            err.error?.message ?? 'Failed to remove collaborator',
           );
           this.saving.set(
             false,

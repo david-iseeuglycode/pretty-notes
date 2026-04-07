@@ -4,7 +4,7 @@
       @if (saveError()) {
         <p class="error">{{ saveError() }}</p>
       }
-      <form (ngSubmit)="save()" class="creator_tools">
+      <form (ngSubmit)="save()" class="admin_tools">
         <div>
           <label class="invisible" for="newTitle">New title to set</label>
           <input
@@ -23,9 +23,8 @@
       <h1>{{ n.title }}</h1>
     }
 
-    @if (isCreator) {
-      <div class="creator_tools">
-        @if (!renaming()) {
+    <div class="admin_tools">
+        @if (isCreator && !renaming()) {
           <button
             [disabled]="renaming()"
             (click)="rename()">🖉</button>
@@ -35,7 +34,6 @@
           [disabled]="deleting()"
           (click)="delete()">🗑</button>
       </div>
-    }
   </div>
 
   @if (deleteError()) {
@@ -56,6 +54,10 @@
 
             @if (createdBy(n, user)) {
               <span class="author">(Author)</span>
+            } @else if (isCreator) {
+              <button
+                [disabled]="saving()"
+                (click)="removeCollaborator(user.id)">🗑</button>
             }
           </li>
         }

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import type {
@@ -173,6 +174,32 @@ export class NoteController
       id,
       user.sub,
       email,
+    );
+  }
+
+  @Delete(
+    ':id/collaborators/:userId',
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  removeCollaborator(
+    @CurrentUser(
+    ) user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe
+      ,
+    ) id: number,
+    @Param(
+      'userId',
+      ParseIntPipe,
+    ) userId: number,
+  ): Promise<void> {
+    return this.noteService.removeCollaborator(
+      id,
+      user.sub,
+      userId,
     );
   }
 }
