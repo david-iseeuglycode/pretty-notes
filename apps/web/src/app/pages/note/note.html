@@ -24,13 +24,15 @@
     }
 
     <div class="admin_tools">
-        @if (isCreator && !renaming()) {
+        @if (isCreator() && !renaming()) {
           <button
+            title="Rename note"
             [disabled]="renaming()"
             (click)="rename()">🖉</button>
         }
 
         <button
+          title="{{ deleteButtonTitle() }}"
           [disabled]="deleting()"
           (click)="delete()">🗑</button>
       </div>
@@ -54,8 +56,9 @@
 
             @if (createdBy(n, user)) {
               <span class="author">(Author)</span>
-            } @else if (isCreator) {
+            } @else if (isCreator()) {
               <button
+                title="Remove collaborator"
                 [disabled]="saving()"
                 (click)="removeCollaborator(user.id)">🗑</button>
             }
@@ -64,7 +67,7 @@
       </ul>
     }
 
-    @if (isCreator) {
+    @if (isCreator()) {
       <form (ngSubmit)="addCollaborator()">
         <div>
           <label class="invisible" for="collaboratorEmail">Collaborator to add</label>

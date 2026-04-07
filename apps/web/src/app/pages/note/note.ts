@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   inject,
   OnDestroy,
@@ -77,6 +78,39 @@ implements OnInit
   );
   saveError = signal<string | null>(
     null,
+  );
+  isCreator = computed(
+    (
+    ): boolean => {
+      const user = this.auth.currentUser(
+      );
+      const note = this.note(
+      );
+
+      return !!user
+        && !!note
+        && note.creator.id === user.id;
+    }
+  );
+  deleteButtonTitle = computed(
+    (
+    ): string => {
+      if (
+        this.isCreator()
+      ) {
+        let title: string = 'Delete';
+
+        if (
+          this.collaborators().length > 0
+        ) {
+          title += ' (for everyone)';
+        }
+
+        return title;
+      } else {
+        return 'Unsubscribe from note';
+      }
+    }
   );
   newCollaboratorEmail = '';
   newTitle = '';
@@ -174,18 +208,6 @@ implements OnInit
         }
       },
     );
-  }
-
-  get isCreator(
-  ): boolean {
-    const user = this.auth.currentUser(
-    );
-    const note = this.note(
-    );
-
-    return !!user
-      && !!note
-      && note.creator.id === user.id;
   }
 
   rename(
@@ -297,7 +319,7 @@ implements OnInit
     );
 
     if (
-      this.isCreator
+      this.isCreator()
     ) {
       this.http.delete(
         `/api/notes/${this.noteId}`,
