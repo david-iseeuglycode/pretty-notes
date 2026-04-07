@@ -52,7 +52,8 @@ export class AuthService
     dto: LoginDto,
   ): Promise<void> {
     const user = await firstValueFrom(
-      this.http.post<UserDto>('/api/auth/login',
+      this.http.post<UserDto>(
+        '/api/auth/login',
         dto,
       ),
     );
