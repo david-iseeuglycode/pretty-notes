@@ -256,6 +256,11 @@ export class NoteService
             },
           },
         },
+        orderBy: {
+          user: {
+            email: 'asc',
+          }
+        }
       },
     );
 
