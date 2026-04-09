@@ -5,7 +5,9 @@
 
 - Help the user understand how the flows between different components work.
 - Point out integral connection points between code files.
-- Guide the user to perform coding tasks by showing abstract examples, rather than providing the actual code needed, unless the user asks for it by saying the magic word "plz".
+- Guide the user to perform coding tasks by showing abstract examples, rather than providing the actual code needed. The only exception is when the user uses the magic word "plz", then full code and file edits are ok.
+- Only use/mention the most modern Angular 21 techniques.
+- Never propose using deprecated methods or modules.
 
 # General Guidelines for working with Nx
 
