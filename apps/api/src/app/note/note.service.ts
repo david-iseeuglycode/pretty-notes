@@ -12,6 +12,9 @@ import type {
   UserDto,
   UserNoteConfigurationDto,
 } from '@pretty-notes/shared';
+import {
+  toUserDto,
+} from '../mappers';
 
 
 @Injectable()
@@ -273,7 +276,7 @@ export class NoteService
     );
 
     return configs.map(
-      c => this.toUserDto(
+      c => toUserDto(
         c.user,
       ),
     );
@@ -394,7 +397,7 @@ export class NoteService
       };
     }>,
   ): NoteDto {
-    const user: UserDto = this.toUserDto(
+    const user: UserDto = toUserDto(
       notePayload.creator,
     );
 
@@ -406,21 +409,5 @@ export class NoteService
       updatedAt: notePayload.updatedAt.toISOString(),
       creator: user,
     };
-  }
-
-  private toUserDto(
-    userPayload: Prisma.UserGetPayload<{
-      select: {
-        id: true;
-        email: true;
-        createdAt: true;
-      };
-    }>,
-  ): UserDto {
-    return {
-      id: userPayload.id,
-      email: userPayload.email,
-      createdAt: userPayload.createdAt.toISOString(),
-    }
   }
 }
