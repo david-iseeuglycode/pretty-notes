@@ -95,6 +95,7 @@ export class AuthService
       {
         sub: user.id,
         email: user.email,
+        createdAt: user.createdAt.toISOString(),
         csrfToken,
       }
     );

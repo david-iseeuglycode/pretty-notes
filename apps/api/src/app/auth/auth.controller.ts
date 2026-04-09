@@ -138,6 +138,7 @@ export class AuthController
         user: {
           sub: number;
           email: string;
+          createdAt: string;
           iat: number;
         };
       }
@@ -146,9 +147,7 @@ export class AuthController
     return {
       id: user.sub,
       email: user.email,
-      createdAt: new Date(
-      ).toISOString(
-      ),
+      createdAt: user.createdAt,
     };
   }
 
