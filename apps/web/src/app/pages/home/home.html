@@ -36,7 +36,8 @@
                     <pn-list-of-note-links
                       [inRootFolder]="false"
                       [listOfNoteLinks]="notesInOpenFolder()"
-                      [availableFolders]="folders()" />
+                      [availableFolders]="folders()"
+                      (noteMovedToFolderId)="openFolder($event)" />
                   }
                 }
               </li>
@@ -74,7 +75,8 @@
           <pn-list-of-note-links
             [inRootFolder]="true"
             [listOfNoteLinks]="notes()"
-            [availableFolders]="folders()" />
+            [availableFolders]="folders()"
+            (noteMovedToFolderId)="noteMovedFromRoot($event)" />
         }
       }
     </div>

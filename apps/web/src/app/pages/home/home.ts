@@ -240,4 +240,13 @@ export class HomePage
       null,
     );
   }
+
+  noteMovedFromRoot(
+    targetFolderId: number,
+  ): void {
+    this.loadNotes();
+    this.openFolder(
+      targetFolderId,
+    );
+  }
 }

@@ -3,6 +3,7 @@ import {
     computed,
     inject,
     input,
+    output,
     signal,
 } from "@angular/core";
 import {
@@ -29,6 +30,7 @@ export class ListOfNoteLinksComponent
   listOfNoteLinks = input.required<NoteDto[]>();
   availableFolders = input.required<FolderDto[]>();
   inRootFolder = input.required<boolean>();
+  noteMovedToFolderId = output<number>();
   error = signal<string | null>(
     null,
   );
@@ -113,6 +115,9 @@ export class ListOfNoteLinksComponent
         next: () => {
           this.moving.set(
             false,
+          );
+          this.noteMovedToFolderId.emit(
+            folderId,
           );
         },
         error: (
