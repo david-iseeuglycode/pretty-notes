@@ -28,6 +28,12 @@ import {
 import {
   NoteService,
 } from './note/note.service.js';
+import {
+  FolderController,
+} from './folder/folder.controller.js';
+import {
+  FolderService,
+} from './folder/folder.service.js';
 
 
 @Module(
@@ -43,19 +49,19 @@ import {
     ],
     controllers: [
       AuthController,
+      FolderController,
       NoteController,
     ],
     providers: [
       AuthService,
-      JwtGuard,
       CsrfGuard,
+      FolderService,
+      JwtGuard,
       NoteService,
       NoteGateway,
     ],
   },
 )
-
-
 export class AppModule
 {
 }

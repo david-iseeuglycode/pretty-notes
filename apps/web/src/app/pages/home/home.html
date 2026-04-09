@@ -1,39 +1,99 @@
 @if (auth.currentUser(); as user) {
-  <div>
-    <h2 class="notes_heading">Your notes</h2>
+  <h2 class="notes_heading">Your notes</h2>
 
-    @if (loading() === true)
-    {
-      <p>Loading...</p>
-    } @else {
-      @if (notes().length === 0) {
-        <p>No notes yet.</p>
+  <div class="folders-and-notes">
+    <div class="folders">
+      @if (loading() === true)
+      {
+        <p>Loading...</p>
       } @else {
-        <ul class="notes_list">
-          @for (note of notes(); track note.id) {
-            <li>
-              <button
-                (click)="openNote(note.id)"
-                title="{{ preview(note.content, 20) }}">{{ note.title }}</button>
-            </li>
-          }
-        </ul>
-      }
-    }
+        @if (folders().length === 0) {
+          <p>No folders yet.</p>
+        } @else {
+          <ul>
+            @for (folder of folders(); track folder.id) {
+              <li class="folder">
+                @if (folder.id === currentFolder()) {
+                  <button
+                    (click)="closeFolder()"
+                    title="Close">🗁</button>
 
-    <h3>New note</h3>
-    <form (ngSubmit)="createNote()">
-      <div>
-        <label class="invisible" for="noteTitle">Note to add</label>
-        <input
-          [(ngModel)]="newNoteTitle"
-          name="noteTitle"
-          id="noteTitle"
-          placeholder="Title" />
-      </div>
-      <button
-        [disabled]="creating()"
-        type="submit">Create</button>
-    </form>
+                } @else {
+                  <button
+                    [disabled]="opening()"
+                    (click)="openFolder(folder.id)"
+                    title="Open">🗀</button>
+                }
+
+                <span class="folderName">{{ folder.name }}</span>
+
+                @if (folder.id === currentFolder()) {
+                  @if (opening()) {
+                    <p>Loading...</p>
+                  } @else if (notesInOpenFolder().length === 0) {
+                    <p>No notes in this folder yet.</p>
+                  } @else {
+                    <pn-list-of-note-links
+                      [inRootFolder]="false"
+                      [listOfNoteLinks]="notesInOpenFolder()"
+                      [availableFolders]="folders()" />
+                  }
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
+
+    <div class="form">
+      <h3 class="notes_heading">New folder</h3>
+      <form (ngSubmit)="createFolder()">
+        <div>
+          <label class="invisible" for="folderName">Folder to add</label>
+          <input
+            [(ngModel)]="newFolderName"
+            name="folderName"
+            id="folderName"
+            placeholder="Name" />
+        </div>
+        <button
+          [disabled]="creating()"
+          type="submit">Create</button>
+      </form>
+    </div>
+
+    <div class="notes">
+      @if (loading() === true)
+      {
+        <p>Loading...</p>
+      } @else {
+        @if (notes().length === 0) {
+          <p>No notes yet.</p>
+        } @else {
+          <pn-list-of-note-links
+            [inRootFolder]="true"
+            [listOfNoteLinks]="notes()"
+            [availableFolders]="folders()" />
+        }
+      }
+    </div>
+
+    <div class="form">
+      <h3 class="notes_heading">New note</h3>
+      <form (ngSubmit)="createNote()">
+        <div>
+          <label class="invisible" for="noteTitle">Note to add</label>
+          <input
+            [(ngModel)]="newNoteTitle"
+            name="noteTitle"
+            id="noteTitle"
+            placeholder="Title" />
+        </div>
+        <button
+          [disabled]="creating()"
+          type="submit">Create</button>
+      </form>
+    </div>
   </div>
 }

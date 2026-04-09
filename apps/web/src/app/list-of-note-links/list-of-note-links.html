@@ -1,0 +1,28 @@
+<ul class="notes_list" [class.inFolder]="!inRootFolder()">
+  @for (note of listOfNoteLinks(); track note.id) {
+    <li>
+      <button
+        class="note-link"
+        (click)="openNote(note.id)"
+        title="{{ preview(note.content, 20) }}">{{ note.title }}</button>
+      @if (noteSelectingFolder() === note.id) {
+        <select>
+          <option class="select-title">Select folder</option>
+
+          @for (folder of availableFolders(); track folder.id) {
+            <option (click)="selectFolder(folder.id)">{{ folder.name }}</option>
+          }
+        </select>
+      } @else {
+        <button
+          [disabled]="moving()"
+          (click)="move(note.id)"
+          [title]="titleForMoveButton()">⤷</button>
+      }
+    </li>
+  }
+</ul>
+
+@if (error()) {
+  <p class="error">{{ error() }}</p>
+}

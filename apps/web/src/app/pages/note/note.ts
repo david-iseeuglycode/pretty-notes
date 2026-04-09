@@ -20,6 +20,7 @@ import {
   Router,
 } from '@angular/router';
 import {
+  FolderDto,
   NoteDto,
   UserDto,
 } from '@pretty-notes/shared';
@@ -57,6 +58,9 @@ implements OnInit
   );
   collaborators = signal<UserDto[]>(
     [],
+  );
+  folder = signal<FolderDto | null>(
+    null,
   );
   error = signal<string | null>(
     null,
@@ -108,6 +112,14 @@ implements OnInit
       }
     }
   );
+  displayTitle = computed(
+    (): string => {
+      const noteTitle: string = this.note()?.title ?? 'unknown title';
+      const folderName: string | undefined = this.folder()?.name;
+
+      return `${noteTitle}${folderName === undefined ? '' : ` in ${folderName}`}`;
+    }
+  );
   newCollaboratorEmail = '';
   newTitle = '';
 
@@ -144,6 +156,26 @@ implements OnInit
       ),
     );
 
+    this.http.get<FolderDto>(
+      `/api/notes/${this.noteId}/folder`,
+    ).subscribe(
+      {
+        next: (
+          f,
+        ) => {
+          this.folder.set(
+            f,
+          );
+        },
+        error: (
+          err,
+        ) => {
+          this.error.set(
+            `Failed to load note folder (${err.status}: ${err.message})`,
+          )
+        }
+      },
+    );
     this.http.get<NoteDto>(
       `/api/notes/${this.noteId}`,
     ).subscribe(

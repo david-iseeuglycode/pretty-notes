@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   inject,
   signal,
@@ -17,11 +18,15 @@ import {
   firstValueFrom,
 } from 'rxjs';
 import {
+  FolderDto,
   NoteDto,
 } from '@pretty-notes/shared';
 import {
   AuthService,
 } from '../../shared/services/auth.service';
+import {
+  ListOfNoteLinksComponent,
+} from '../../list-of-note-links/list-of-note-links';
 
 
 @Component(
@@ -31,6 +36,7 @@ import {
     styleUrl: './home.scss',
     imports: [
       FormsModule,
+      ListOfNoteLinksComponent,
     ],
   },
 )
@@ -52,10 +58,30 @@ export class HomePage
   notes = signal<NoteDto[]>(
     [],
   );
-  loading = signal<boolean>(
+  notesInOpenFolder = signal<NoteDto[]>(
+    [],
+  );
+  folders = signal<FolderDto[]>(
+    [],
+  );
+  loadingNotes = signal<boolean>(
     false,
   );
+  loadingFolders = signal<boolean>(
+    false,
+  );
+  loading = computed(
+    (): boolean => this.loadingNotes()
+      || this.loadingFolders()
+  );
+  opening = signal<boolean>(
+    false,
+  );
+  currentFolder = signal<number | null>(
+    null,
+  );
   newNoteTitle = '';
+  newFolderName = '';
 
 
   constructor() {
@@ -65,14 +91,15 @@ export class HomePage
           this.auth.currentUser()
         ) {
           this.loadNotes();
+          this.loadFolders();
         }
-      }
+      },
     );
   }
 
 
   loadNotes(): void {
-    this.loading.set(
+    this.loadingNotes.set(
       true,
     );
     this.http.get<NoteDto[]>(
@@ -84,15 +111,34 @@ export class HomePage
         this.notes.set(
           notes,
         );
-        this.loading.set(
+        this.loadingNotes.set(
           false,
         );
-      }
+      },
     );
   }
 
-  async createNote(
-  ): Promise<void> {
+  loadFolders(): void {
+    this.loadingFolders.set(
+      true,
+    );
+    this.http.get<FolderDto[]>(
+      '/api/folders',
+    ).subscribe(
+      (
+        folders,
+      ) => {
+        this.folders.set(
+          folders,
+        );
+        this.loadingFolders.set(
+          false,
+        );
+      },
+    );
+  }
+
+  async createNote(): Promise<void> {
     if (
       !this.newNoteTitle.trim()
     ) {
@@ -107,7 +153,7 @@ export class HomePage
       this.http.post<NoteDto>(
         '/api/notes',
         {
-          title: this.newNoteTitle,
+          title: this.newNoteTitle.trim(),
         },
       ),
     );
@@ -129,25 +175,69 @@ export class HomePage
     );
   }
 
-  openNote(
-    id: number,
-  ): void {
-    this.router.navigate(
-      [
-        '/notes',
-        id,
-      ],
+  async createFolder(): Promise<void> {
+    if (
+      !this.newFolderName.trim()
+    ) {
+      return;
+    }
+
+    this.creating.set(
+      true,
+    );
+
+    const folder = await firstValueFrom(
+      this.http.post<FolderDto>(
+        '/api/folders',
+        {
+          name: this.newFolderName.trim()
+        },
+      ),
+    );
+
+    if (
+      folder
+    ) {
+      this.newFolderName = '';
+      this.loadFolders();
+    }
+
+    this.creating.set(
+      false,
     );
   }
 
-  preview(
-    text: string,
-    maxLength: number,
-  ): string {
-    return text.length === 0
-      ? "Empty note"
-      : text.length > maxLength
-        ? `${text.substring(0, maxLength)}...`
-        : text;
+  openFolder(
+    id: number,
+  ): void {
+    this.opening.set(
+      true,
+    );
+    this.currentFolder.set(
+      id,
+    );
+    this.http.get<NoteDto[]>(
+      `/api/folders/${id}/notes`,
+    ).subscribe(
+      (
+        notes,
+      ) => {
+        this.notesInOpenFolder.set(
+          notes,
+        );
+        this.opening.set(
+          false,
+        );
+      },
+    );
+  }
+
+  closeFolder(): void {
+    this.notesInOpenFolder.set(
+      [],
+    );
+    this.currentFolder.set(
+      null,
+    );
   }
 }

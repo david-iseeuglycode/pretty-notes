@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -13,6 +14,7 @@ import type {
   NoteDto,
   UserDto,
   UserNoteConfigurationDto,
+  FolderDto,
 } from '@pretty-notes/shared';
 import {
   JwtGuard,
@@ -188,6 +190,64 @@ export class NoteController
       id,
       user.sub,
       userId,
+    );
+  }
+
+  @Get(
+    ':id/folder',
+  )
+  getFolder(
+    @CurrentUser() user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+  ): Promise<FolderDto | null> {
+    return this.noteService.getFolder(
+      id,
+      user.sub,
+    );
+  }
+
+  @Patch(
+    ':id/folder',
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  moveToFolder(
+    @CurrentUser() user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+    @Body(
+      'folderId',
+    ) folderId: string | null,
+  ): Promise<void> {
+    if (folderId === null) {
+      return this.noteService.removeFromFolder(
+        id,
+        user.sub,
+      );
+    }
+
+    const parsedFolderId: number = Number.parseInt(folderId);
+
+    if (
+      Number.isNaN(
+        parsedFolderId
+      )
+    ) {
+      throw new BadRequestException(
+        'folderId must be an integer'
+      );
+    }
+
+    return this.noteService.addToFolder(
+      id,
+      user.sub,
+      parsedFolderId,
     );
   }
 }

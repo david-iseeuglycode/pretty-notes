@@ -4,9 +4,13 @@
       @if (saveError()) {
         <p class="error">{{ saveError() }}</p>
       }
-      <form (ngSubmit)="save()" class="admin_tools">
+      <form
+        (ngSubmit)="save()"
+        class="admin_tools">
         <div>
-          <label class="invisible" for="newTitle">New title to set</label>
+          <label
+            class="invisible"
+            for="newTitle">New title to set</label>
           <input
             #titleInput
             type="text"
@@ -20,7 +24,7 @@
           [disabled]="saving()">💾</button>
       </form>
     } @else {
-      <h1>{{ n.title }}</h1>
+      <h1>{{ displayTitle() }}</h1>
     }
 
     <div class="admin_tools">
@@ -70,7 +74,9 @@
     @if (isCreator()) {
       <form (ngSubmit)="addCollaborator()">
         <div>
-          <label class="invisible" for="collaboratorEmail">Collaborator to add</label>
+          <label
+            class="invisible"
+            for="collaboratorEmail">Collaborator to add</label>
           <input
             type="email"
             [(ngModel)]="newCollaboratorEmail"

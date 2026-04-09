@@ -1,0 +1,23 @@
+select {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+select > option {
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.notes_list {
+  margin-bottom: 20px;
+}
+
+.note-link {
+  border-bottom: 1px dotted;
+  margin-right: 10px;
+}
+
+.inFolder {
+  margin-left: 25px;
+  margin-bottom: 0px;
+}

@@ -8,6 +8,7 @@ import {
   PrismaService,
 } from '@pretty-notes/prisma';
 import type {
+  FolderDto,
   NoteDto,
   UserDto,
   UserNoteConfigurationDto,
@@ -67,14 +68,26 @@ export class NoteService
 
   async findAllForUser(
     userId: number,
+    folderId?: number,
   ): Promise<NoteDto[]> {
+    const userAndFolderFilter = {
+      userId,
+      ...(
+        folderId === undefined
+          ? {
+            folderId: null,
+          }
+          : {
+            folderId,
+          }
+      ),
+    };
+
     const notes = await this.prisma.note.findMany(
       {
         where: {
           users: {
-            some: {
-              userId,
-            },
+            some: userAndFolderFilter,
           },
         },
         include: {
@@ -383,7 +396,147 @@ export class NoteService
     );
   }
 
+  async addToFolder(
+    noteId: number,
+    requestingUserId: number,
+    folderId: number,
+  ): Promise<void> {
+    const folder = await this.prisma.folder.findUnique(
+      {
+        where: {
+          id: folderId,
+          userId: requestingUserId,
+        },
+      },
+    );
 
+    if (
+      !folder
+    ) {
+      throw new ForbiddenException(
+        'Only the folder creator can add notes to it',
+      );
+    }
+
+    await this.updateFolderIdForUserNote(
+      noteId,
+      requestingUserId,
+      folderId,
+    );
+  }
+
+  async removeFromFolder(
+    noteId: number,
+    requestingUserId: number,
+  ): Promise<void> {
+    await this.updateFolderIdForUserNote(
+      noteId,
+      requestingUserId,
+      null,
+    );
+  }
+
+  async getFolder(
+    noteId: number,
+    requestingUserId: number,
+  ): Promise<FolderDto | null> {
+    const userNoteConfig = await this.prisma.userNoteConfiguration.findUnique(
+      {
+        where: {
+          userId_noteId: {
+            userId: requestingUserId,
+            noteId: noteId,
+          },
+        },
+      },
+    );
+
+    if (
+      !userNoteConfig
+    ) {
+      throw new NotFoundException(
+        'unknown note id and user id combination',
+      );
+    }
+
+    if (
+      !userNoteConfig.folderId
+    ) {
+      return null;
+    }
+
+    const folder = await this.prisma.folder.findUnique(
+      {
+        where: {
+          id: userNoteConfig.folderId,
+        },
+      },
+    );
+
+    if (
+      !folder
+    ) {
+      return null;
+    }
+
+    return this.toFolderDto(folder);
+  }
+
+
+  private async updateFolderIdForUserNote(
+    noteId: number,
+    userId: number,
+    folderId: number | null,
+  ): Promise<void> {
+    const newUserNoteConfiguration = await this.prisma.userNoteConfiguration.findUnique(
+      {
+        where: {
+          userId_noteId: {
+            userId: userId,
+            noteId: noteId,
+          },
+        },
+      },
+    );
+
+    if (
+      !newUserNoteConfiguration
+    ) {
+      throw new NotFoundException(
+        `The user used for the request can't find a note with id ${noteId}`,
+      );
+    }
+
+    await this.prisma.userNoteConfiguration.update(
+      {
+        where: {
+          userId_noteId: {
+            userId: userId,
+            noteId: noteId,
+          }
+        },
+        data: {
+          folderId: folderId,
+        },
+      },
+    );
+  }
+
+  private toFolderDto(
+    folderPayload: Prisma.FolderGetPayload<{
+      select: {
+        id: true,
+        name: true,
+        userId: true;
+      };
+    }>
+  ): FolderDto {
+    return {
+      id: folderPayload.id,
+      name: folderPayload.name,
+      userId: folderPayload.userId,
+    }
+  }
   private toNoteDto(
     notePayload: Prisma.NoteGetPayload<{
       include: {
