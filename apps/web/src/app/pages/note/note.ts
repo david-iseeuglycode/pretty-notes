@@ -257,7 +257,7 @@ implements OnInit
       return;
     }
 
-    this.http.put<NoteDto>(
+    this.http.patch<NoteDto>(
       `/api/notes/${this.noteId}`,
       {
         title: newTitle,

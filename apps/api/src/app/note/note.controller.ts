@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import type {
@@ -89,7 +89,7 @@ export class NoteController
     );
   }
 
-  @Put(
+  @Patch(
     ':id',
   )
   @UseGuards(
