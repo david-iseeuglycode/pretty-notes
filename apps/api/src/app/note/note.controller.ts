@@ -55,7 +55,7 @@ export class NoteController
   }
 
   @Delete(
-    ':id'
+    ':id',
   )
   @UseGuards(
     CsrfGuard,
@@ -177,8 +177,7 @@ export class NoteController
     @CurrentUser() user: JwtUser,
     @Param(
       'id',
-      ParseIntPipe
-      ,
+      ParseIntPipe,
     ) id: number,
     @Param(
       'userId',

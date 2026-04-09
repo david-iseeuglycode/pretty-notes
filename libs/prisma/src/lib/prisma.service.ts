@@ -25,8 +25,7 @@ function parseDatabaseUrl(
   const [server, port] = hostPort.split(
     ':',
   );
-  const params: Record<string, string> = {
-  };
+  const params: Record<string, string> = {};
 
   for (const part of paramParts) {
     const [key, ...valueParts] = part.split(
@@ -54,8 +53,7 @@ function parseDatabaseUrl(
   };
 }
 
-@Injectable(
-)
+@Injectable()
 export class PrismaService
 extends PrismaClient
 implements OnModuleInit
@@ -66,8 +64,7 @@ implements OnModuleInit
   );
 
 
-  constructor(
-  ) {
+  constructor() {
     const adapter = new PrismaMssql(
       parseDatabaseUrl(
         process.env['DATABASE_URL']!
@@ -82,11 +79,9 @@ implements OnModuleInit
   }
 
 
-  async onModuleInit(
-  ): Promise<void> {
+  async onModuleInit(): Promise<void> {
     try {
-      await this.$connect(
-      );
+      await this.$connect();
       this.logger.log(
         'Connected to database',
       );
@@ -97,9 +92,7 @@ implements OnModuleInit
     }
   }
 
-  async onModuleDestroy(
-  ): Promise<void> {
-    await this.$disconnect(
-    );
+  async onModuleDestroy(): Promise<void> {
+    await this.$disconnect();
   }
 }

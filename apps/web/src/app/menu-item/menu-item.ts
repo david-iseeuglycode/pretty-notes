@@ -1,6 +1,6 @@
 import {
-    Component,
-    input,
+  Component,
+  input,
 } from "@angular/core";
 
 
