@@ -5,6 +5,7 @@
 .folderName {
   font-weight: 600;
   margin-left: 5px;
+  margin-right: 10px;
 }
 
 .folder > p,
@@ -25,4 +26,9 @@
 
 .form {
   width: 40%;
+}
+
+.folderDetails {
+  display: flex;
+  flex-wrap: wrap;
 }

@@ -1,5 +1,7 @@
 import {
+  ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   Prisma,
@@ -7,15 +9,12 @@ import {
 } from '@pretty-notes/prisma';
 import type {
   NoteDto,
-  UserDto,
   FolderDto,
 } from '@pretty-notes/shared';
 import {
-  toUserDto,
-} from '../mappers';
-import {
   NoteService,
 } from '../note/note.service';
+import { throwCustomIfNotFoundOrRethrow } from '../utilities';
 
 
 @Injectable()
@@ -55,6 +54,44 @@ export class FolderService
     );
   }
 
+  async delete(
+    folderId: number,
+    requestingUserId: number,
+  ): Promise<void> {
+    try {
+      await this.prisma.$transaction(
+        [
+          this.prisma.userNoteConfiguration.updateMany(
+            {
+              where: {
+                folderId: folderId,
+                userId: requestingUserId,
+              },
+              data: {
+                folderId: null,
+              }
+            }
+          ),
+          this.prisma.folder.delete(
+            {
+              where: {
+                id: folderId,
+                userId: requestingUserId,
+              },
+            },
+          ),
+        ],
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new ForbiddenException(
+          'only the creating user can delete a folder',
+        ),
+        e,
+      );
+    }
+  }
+
   async findAllForUser(
     userId: number,
   ): Promise<FolderDto[]> {
@@ -62,15 +99,6 @@ export class FolderService
       {
         where: {
           userId: userId,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              createdAt: true,
-            },
-          },
         },
         orderBy: {
           name: 'asc',
@@ -95,29 +123,43 @@ export class FolderService
     );
   }
 
+  async updateName(
+    folderId: number,
+    requestingUserId: number,
+    name: string,
+  ): Promise<FolderDto> {
+    try {
+      const updatedFolder = await this.prisma.folder.update(
+        {
+          where: {
+            id: folderId,
+            userId: requestingUserId,
+          },
+          data: {
+            name,
+          },
+        },
+      );
+
+      return this.toFolderDto(updatedFolder);
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          'no such folder exists for the user',
+        ),
+        e,
+      );
+    }
+  }
+
 
   private toFolderDto(
-    folderPayload: Prisma.FolderGetPayload<{
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            createdAt: true,
-          }
-        },
-      }
-    }>,
+    folderPayload: Prisma.FolderGetPayload<{}>,
   ): FolderDto {
-    const user: UserDto = toUserDto(
-      folderPayload.user,
-    );
-
     return {
       id: folderPayload.id,
       name: folderPayload.name,
       userId: folderPayload.userId,
-      user: user,
     };
   }
 }

@@ -1,0 +1,13 @@
+<div class="toaster">
+  <div class="close">
+    @if (_displayCloserIcon()) {
+      <button
+        title="Close"
+        (click)="close()">ⓧ</button>
+    }
+  </div>
+
+  <div class="message">
+    <p [class.error]="_error()">{{ _message() }}</p>
+  </div>
+</div>

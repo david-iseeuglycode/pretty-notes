@@ -1,9 +1,12 @@
 import {
+  ChangeDetectorRef,
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   signal,
+  ViewChild,
 } from '@angular/core';
 import {
   FormsModule,
@@ -27,6 +30,10 @@ import {
 import {
   ListOfNoteLinksComponent,
 } from '../../list-of-note-links/list-of-note-links';
+import {
+  ToasterComponent,
+  ToasterDto,
+} from '../../toaster/toaster';
 
 
 @Component(
@@ -37,11 +44,16 @@ import {
     imports: [
       FormsModule,
       ListOfNoteLinksComponent,
+      ToasterComponent,
     ],
   },
 )
 export class HomePage
 {
+  @ViewChild(
+    'folderNameInput',
+  ) folderNameInput?: ElementRef<HTMLInputElement>;
+
   auth = inject(
     AuthService,
   );
@@ -70,6 +82,24 @@ export class HomePage
   loadingFolders = signal<boolean>(
     false,
   );
+  renamingFolder = signal<FolderDto | null>(
+    null,
+  );
+  renamingNote = signal<number | null>(
+    null,
+  );
+  savingFolder = signal<FolderDto | null>(
+    null,
+  );
+  savingNote = signal<boolean>(
+    false,
+  );
+  saveError = signal<string | null>(
+    null,
+  );
+  toaster = signal<ToasterDto | null>(
+    null,
+  );
   loading = computed(
     (): boolean => this.loadingNotes()
       || this.loadingFolders()
@@ -80,8 +110,16 @@ export class HomePage
   currentFolder = signal<number | null>(
     null,
   );
+  deletingFolder = signal<FolderDto | null>(
+    null,
+  );
   newNoteTitle = '';
   newFolderName = '';
+  renamedFolderName = '';
+
+  private cdr = inject(
+    ChangeDetectorRef,
+  );
 
 
   constructor() {
@@ -207,6 +245,41 @@ export class HomePage
     );
   }
 
+  deleteFolder(
+    folder: FolderDto,
+  ):void {
+    this.deletingFolder.set(
+      folder,
+    );
+    this.http.delete(
+      `/api/folders/${folder.id}`,
+    ).subscribe(
+      {
+        next: () => {
+          this.deletingFolder.set(
+            null,
+          );
+          this.loadFolders();
+          this.loadNotes();
+        },
+        error: (
+          err,
+        ) => {
+          this.deletingFolder.set(
+            null,
+          );
+          this.toaster.set(
+            {
+              message: err.error?.message ?? 'Error deleting folder',
+              error: true,
+              secondsToLive: 4,
+            }
+          );
+        },
+      },
+    );
+  }
+
   openFolder(
     id: number,
   ): void {
@@ -247,6 +320,104 @@ export class HomePage
     this.loadNotes();
     this.openFolder(
       targetFolderId,
+    );
+  }
+
+  renameFolder(
+    folder: FolderDto,
+  ): void {
+    this.renamingFolder.set(
+      folder,
+    );
+    this.renamedFolderName = folder.name;
+    this.cdr.detectChanges();
+    this.folderNameInput?.nativeElement.focus();
+  }
+
+  saveFolder(
+    folder: FolderDto,
+  ): void {
+    this.savingFolder.set(
+      folder,
+    );
+    this.saveError.set(
+      null,
+    );
+
+    const renamedFolderName = this.renamedFolderName.trim();
+    const folderId = this.renamingFolder()?.id ?? 0;
+
+    if (
+      renamedFolderName === folder.name
+      || !renamedFolderName
+      || folderId === 0
+    ) {
+      if (!renamedFolderName) {
+        this.saveError.set(
+          'The folder name can\'t be empty',
+        );
+      }
+
+      if (renamedFolderName === folder.name) {
+        this.renamingFolder.set(
+          null,
+        );
+      }
+
+      this.savingFolder.set(
+        null,
+      );
+
+      return;
+    }
+
+    this.http.patch<FolderDto>(
+      `/api/folders/${folderId}`,
+      {
+        name: renamedFolderName,
+      }
+    ).subscribe(
+      {
+        next: (
+          f,
+        ) => {
+          this.renamingFolder.set(
+            null,
+          );
+          this.savingFolder.set(
+            null,
+          );
+          this.saveError.set(
+            null,
+          );
+          this.renamedFolderName = '';
+          this.loadFolders();
+        },
+        error: (
+          err,
+        ) => {
+          this.renamingFolder.set(
+            null,
+          );
+          this.savingFolder.set(
+            null,
+          );
+          this.saveError.set(
+            err.error?.message ?? 'Failed to save folder name',
+          )
+          this.renamedFolderName = '';
+        },
+      },
+    );
+  }
+
+  cancelFolderRenaming(): void {
+    this.renamingFolder.set(
+      null,
+    );
+
+    this.saveError.set(
+      null,
     );
   }
 }

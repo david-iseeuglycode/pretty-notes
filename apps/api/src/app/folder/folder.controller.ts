@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -80,6 +82,48 @@ export class FolderController
     return this.folderService.create(
       user.sub,
       name,
+    );
+  }
+
+  @Delete(
+    ':id',
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  delete(
+    @CurrentUser() user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+  ): Promise<void> {
+    return this.folderService.delete(
+      id,
+      user.sub,
+    );
+  }
+
+  @Patch(
+    ':id',
+  )
+  @UseGuards(
+    CsrfGuard,
+  )
+  updateName(
+    @CurrentUser() user: JwtUser,
+    @Param(
+      'id',
+      ParseIntPipe,
+    ) id: number,
+    @Body(
+      'name',
+    ) newName: string,
+  ): Promise<FolderDto> {
+    return this.folderService.updateName(
+      id,
+      user.sub,
+      newName,
     );
   }
 }

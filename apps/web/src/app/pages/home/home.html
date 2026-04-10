@@ -1,11 +1,17 @@
 @if (auth.currentUser(); as user) {
+  @if (toaster()) {
+    <pn-toaster
+      [toasterDto]="toaster()!"
+      (closed)="toaster.set(null)" />
+  }
+
   <h2 class="notes_heading">Your notes</h2>
 
   <div class="folders-and-notes">
     <div class="folders">
       @if (loading() === true)
       {
-        <p>Loading...</p>
+        <p>Loading folders...</p>
       } @else {
         @if (folders().length === 0) {
           <p>No folders yet.</p>
@@ -13,23 +19,59 @@
           <ul>
             @for (folder of folders(); track folder.id) {
               <li class="folder">
-                @if (folder.id === currentFolder()) {
-                  <button
-                    (click)="closeFolder()"
-                    title="Close">🗁</button>
+                <div class="folderDetails">
+                  @if (folder.id === currentFolder()) {
+                    <button
+                      (click)="closeFolder()"
+                      title="Close">🗁</button>
+                  } @else {
+                    <button
+                      [disabled]="opening()"
+                      (click)="openFolder(folder.id)"
+                      title="Open">🗀</button>
+                  }
 
-                } @else {
-                  <button
-                    [disabled]="opening()"
-                    (click)="openFolder(folder.id)"
-                    title="Open">🗀</button>
-                }
+                  @if (renamingFolder() === folder) {
+                    @if (saveError()) {
+                      <p class="error">{{ saveError() }}</p>
+                    }
 
-                <span class="folderName">{{ folder.name }}</span>
+                    <form
+                      class="renameFolder"
+                      (ngSubmit)="saveFolder(folder)">
+                      <div>
+                        <label
+                          class="invisible"
+                          for="renamedFolderName">New folder name to set</label>
+                        <input
+                          #folderNameInput
+                          type="text"
+                          [(ngModel)]="renamedFolderName"
+                          (keydown.escape)="cancelFolderRenaming()"
+                          name="renamedFolderName"
+                          id="renamedFolderName" />
+                      </div>
+                      <button
+                        type="submit"
+                        [disabled]="savingFolder() === folder">💾</button>
+                    </form>
+                  } @else {
+                    <span class="folderName">{{ folder.name }}</span>
+                    <button
+                      title="Rename {{ folder.name }}"
+                      [disabled]="renamingFolder() === folder"
+                      (click)="renameFolder(folder)">🖉</button>
+                  }
+
+                  <button
+                    title="Delete {{ folder.name }}"
+                    [disabled]="savingFolder() === folder || deletingFolder() === folder"
+                    (click)="deleteFolder(folder)">🗑</button>
+                </div>
 
                 @if (folder.id === currentFolder()) {
                   @if (opening()) {
-                    <p>Loading...</p>
+                    <p>Loading notes in {{ folder.name }}...</p>
                   } @else if (notesInOpenFolder().length === 0) {
                     <p>No notes in this folder yet.</p>
                   } @else {
@@ -51,7 +93,9 @@
       <h3 class="notes_heading">New folder</h3>
       <form (ngSubmit)="createFolder()">
         <div>
-          <label class="invisible" for="folderName">Folder to add</label>
+          <label
+            class="invisible"
+            for="folderName">Folder to add</label>
           <input
             [(ngModel)]="newFolderName"
             name="folderName"
@@ -67,7 +111,7 @@
     <div class="notes">
       @if (loading() === true)
       {
-        <p>Loading...</p>
+        <p>Loading notes in root...</p>
       } @else {
         @if (notes().length === 0) {
           <p>No notes yet.</p>
