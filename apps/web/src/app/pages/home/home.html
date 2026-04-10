@@ -78,7 +78,7 @@
                       [listOfNoteLinks]="notesInOpenFolder()"
                       [availableFolders]="folders()"
                       (noteMovedToFolderId)="openFolder($event)"
-                      (noteModified)="loadFolders()" />
+                      (noteModified)="openFolder(currentFolder()!)" />
                   }
                 }
               </li>
