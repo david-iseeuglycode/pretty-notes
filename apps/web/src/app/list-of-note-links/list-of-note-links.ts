@@ -343,32 +343,41 @@ export class ListOfNoteLinksComponent
     } else {
       const currentUserId = this.auth.currentUser()?.id;
 
-      this.http.delete(
-        `/api/notes/${note.id}/collaborators/${currentUserId}`,
-      ).subscribe(
-        {
-          next: () => {
-            this.noteModified.emit();
-            this.deletingNote.set(
-              null,
-            );
+      if (currentUserId) {
+        this.http.delete(
+          `/api/notes/${note.id}/collaborators/${currentUserId}`,
+        ).subscribe(
+          {
+            next: () => {
+              this.noteModified.emit();
+              this.deletingNote.set(
+                null,
+              );
+            },
+            error: (
+              err,
+            ) => {
+              this.toaster.set(
+                {
+                  message: err.error?.message ?? 'Failed to unsubscribe from note',
+                  error: true,
+                  secondsToLive: 4,
+                },
+              );
+              this.deletingNote.set(
+                null,
+              );
+            },
           },
-          error: (
-            err,
-          ) => {
-            this.toaster.set(
-              {
-                message: err.error?.message ?? 'Failed to unsubscribe from note',
-                error: true,
-                secondsToLive: 4,
-              },
-            );
-            this.deletingNote.set(
-              null,
-            );
+        );
+      } else {
+        this.toaster.set(
+          {
+            message: 'no current user found',
+            error: true,
           },
-        },
-      );
+        );
+      }
     }
   }
 }
