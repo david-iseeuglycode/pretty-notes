@@ -60,13 +60,6 @@ export class HomePage
   creating = signal<boolean>(
     false,
   );
-  private http = inject(
-    HttpClient,
-  );
-  private router = inject(
-    Router,
-  );
-
   notes = signal<NoteDto[]>(
     [],
   );
@@ -119,6 +112,12 @@ export class HomePage
 
   private cdr = inject(
     ChangeDetectorRef,
+  );
+  private http = inject(
+    HttpClient,
+  );
+  private router = inject(
+    Router,
   );
 
 
@@ -334,9 +333,15 @@ export class HomePage
     this.folderNameInput?.nativeElement.focus();
   }
 
-  saveFolder(
-    folder: FolderDto,
-  ): void {
+  saveFolder(): void {
+    if (
+      !this.renamingFolder()
+    ) {
+      return;
+    }
+
+    const folder = this.renamingFolder()!;
+
     this.savingFolder.set(
       folder,
     );
@@ -345,20 +350,22 @@ export class HomePage
     );
 
     const renamedFolderName = this.renamedFolderName.trim();
-    const folderId = this.renamingFolder()?.id ?? 0;
 
     if (
       renamedFolderName === folder.name
       || !renamedFolderName
-      || folderId === 0
     ) {
-      if (!renamedFolderName) {
+      if (
+        !renamedFolderName
+      ) {
         this.saveError.set(
           'The folder name can\'t be empty',
         );
       }
 
-      if (renamedFolderName === folder.name) {
+      if (
+        renamedFolderName === folder.name
+      ) {
         this.renamingFolder.set(
           null,
         );
@@ -372,10 +379,10 @@ export class HomePage
     }
 
     this.http.patch<FolderDto>(
-      `/api/folders/${folderId}`,
+      `/api/folders/${folder.id}`,
       {
         name: renamedFolderName,
-      }
+      },
     ).subscribe(
       {
         next: (
@@ -404,7 +411,7 @@ export class HomePage
           );
           this.saveError.set(
             err.error?.message ?? 'Failed to save folder name',
-          )
+          );
           this.renamedFolderName = '';
         },
       },
@@ -415,7 +422,6 @@ export class HomePage
     this.renamingFolder.set(
       null,
     );
-
     this.saveError.set(
       null,
     );

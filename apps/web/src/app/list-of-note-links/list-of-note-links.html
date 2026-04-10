@@ -1,24 +1,63 @@
+@if (toaster()) {
+  <pn-toaster
+    [toasterDto]="toaster()!"
+    (closed)="toaster.set(null)" />
+}
 <ul class="notes_list" [class.inFolder]="!inRootFolder()">
   @for (note of listOfNoteLinks(); track note.id) {
     <li>
-      <button
-        class="note-link"
-        (click)="openNote(note.id)"
-        title="{{ preview(note.content, 20) }}">{{ note.title }}</button>
-      @if (noteSelectingFolder() === note.id) {
-        <select>
-          <option class="select-title">Select folder</option>
-
-          @for (folder of availableFolders(); track folder.id) {
-            <option (click)="selectFolder(folder.id)">{{ folder.name }}</option>
+      <div class="noteDetails">
+        @if (renamingNote() === note) {
+          @if (saveError()) {
+            <p class="error">{{ saveError() }}</p>
           }
-        </select>
-      } @else {
+            <form (ngSubmit)="saveNote()">
+              <div>
+                <label
+                  class="invisible"
+                  for="renamedNoteTitle">New note name to set</label>
+                <input
+                  #noteNameInput
+                  type="text"
+                  [(ngModel)]="renamedNoteTitle"
+                  (keydown.escape)="cancelNoteRenaming()"
+                  name="renamedNoteTitle"
+                  id="renamedNoteTitle" />
+              </div>
+              <button
+                type="submit"
+                [disabled]="savingNote() === note">💾</button>
+            </form>
+        } @else {
+          <button
+            class="note-link"
+            (click)="openNote(note.id)"
+            title="{{ preview(note.content, 20) }}">{{ note.title }}</button>
+          <button
+            [title]="renameButtonTitle(note)"
+            [disabled]="!isCreatorOf(note) || renamingNote() === note || deletingNote() === note"
+            (click)="renameNote(note)">🖉</button>
+        }
+        @if (noteSelectingFolder() === note.id) {
+          <select>
+            <option class="select-title">Select folder</option>
+
+            @for (folder of availableFolders(); track folder.id) {
+              <option (click)="selectFolder(folder.id)">{{ folder.name }}</option>
+            }
+          </select>
+        } @else {
+          <button
+            [disabled]="moving() || availableFolders().length === 0"
+            (click)="move(note.id)"
+            [title]="titleForMoveButton()">⤷</button>
+        }
+
         <button
-          [disabled]="moving() || availableFolders().length === 0"
-          (click)="move(note.id)"
-          [title]="titleForMoveButton()">⤷</button>
-      }
+          [title]="deleteButtonTitle(note)"
+          [disabled]="savingNote() === note || deletingNote() === note"
+          (click)="deleteNote(note)">🗑</button>
+      </div>
     </li>
   }
 </ul>

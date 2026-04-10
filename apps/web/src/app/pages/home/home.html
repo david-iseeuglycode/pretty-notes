@@ -36,9 +36,7 @@
                       <p class="error">{{ saveError() }}</p>
                     }
 
-                    <form
-                      class="renameFolder"
-                      (ngSubmit)="saveFolder(folder)">
+                    <form (ngSubmit)="saveFolder()">
                       <div>
                         <label
                           class="invisible"
@@ -59,7 +57,7 @@
                     <span class="folderName">{{ folder.name }}</span>
                     <button
                       title="Rename {{ folder.name }}"
-                      [disabled]="renamingFolder() === folder"
+                      [disabled]="renamingFolder() === folder || deletingFolder() === folder"
                       (click)="renameFolder(folder)">🖉</button>
                   }
 
@@ -79,7 +77,8 @@
                       [inRootFolder]="false"
                       [listOfNoteLinks]="notesInOpenFolder()"
                       [availableFolders]="folders()"
-                      (noteMovedToFolderId)="openFolder($event)" />
+                      (noteMovedToFolderId)="openFolder($event)"
+                      (noteModified)="loadFolders()" />
                   }
                 }
               </li>
@@ -120,7 +119,8 @@
             [inRootFolder]="true"
             [listOfNoteLinks]="notes()"
             [availableFolders]="folders()"
-            (noteMovedToFolderId)="noteMovedFromRoot($event)" />
+            (noteMovedToFolderId)="noteMovedFromRoot($event)"
+            (noteModified)="loadNotes()" />
         }
       }
     </div>
