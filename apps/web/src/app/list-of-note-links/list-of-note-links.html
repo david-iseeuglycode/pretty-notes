@@ -15,7 +15,7 @@
         </select>
       } @else {
         <button
-          [disabled]="moving()"
+          [disabled]="moving() || availableFolders().length === 0"
           (click)="move(note.id)"
           [title]="titleForMoveButton()">⤷</button>
       }
