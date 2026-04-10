@@ -6,6 +6,7 @@ import {
 import {
   Prisma,
   PrismaService,
+  UserNoteConfiguration,
 } from '@pretty-notes/prisma';
 import type {
   FolderDto,
@@ -16,6 +17,7 @@ import type {
 import {
   toUserDto,
 } from '../mappers';
+import { throwCustomIfNotFoundOrRethrow } from '../utilities';
 
 
 @Injectable()
@@ -149,30 +151,23 @@ export class NoteService
     noteId: number,
     requestingUserId: number,
   ): Promise<void> {
-    const note = await this.prisma.note.findFirst(
-      {
-        where: {
-          id: noteId,
-          createdBy: requestingUserId,
-        },
-      },
-    );
-
-    if (
-      !note
-    ) {
-      throw new ForbiddenException(
-        'Only the note creator can delete a note',
+    try {
+      await this.prisma.note.delete(
+        {
+          where: {
+            id: noteId,
+            createdBy: requestingUserId,
+          }
+        }
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new ForbiddenException(
+          'Only the note creator can delete a note',
+        ),
+        e,
       );
     }
-
-    await this.prisma.note.delete(
-      {
-        where: {
-          id: noteId,
-        }
-      }
-    );
   }
 
   async updateContent(
@@ -196,46 +191,39 @@ export class NoteService
     requestingUserId: number,
     title: string,
   ): Promise<NoteDto> {
-    const note = await this.prisma.note.findFirst(
-      {
-        where: {
-          id: noteId,
-          createdBy: requestingUserId,
-        },
-      },
-    );
-
-    if (
-      !note
-    ) {
-      throw new ForbiddenException(
-        'Only the note creator can update the title',
-      );
-    }
-
-    const updatedNote = await this.prisma.note.update(
-      {
-        where: {
-          id: noteId,
-        },
-        data: {
-          title,
-        },
-        include: {
-          creator: {
-            select: {
-              id: true,
-              email: true,
-              createdAt: true,
+    try {
+      const updatedNote = await this.prisma.note.update(
+        {
+          where: {
+            id: noteId,
+            createdBy: requestingUserId,
+          },
+          data: {
+            title,
+          },
+          include: {
+            creator: {
+              select: {
+                id: true,
+                email: true,
+                createdAt: true,
+              },
             },
           },
-        },
-      }
-    );
+        }
+      );
 
-    return this.toNoteDto(
-      updatedNote,
-    );
+      return this.toNoteDto(
+        updatedNote,
+      );
+    } catch(e) {
+      throwCustomIfNotFoundOrRethrow(
+        new ForbiddenException(
+          'Only the note creator can update the title',
+        ),
+        e,
+      );
+    }
   }
 
   async getCollaborators(
@@ -300,49 +288,51 @@ export class NoteService
     requestingUserId: number,
     email: string,
   ): Promise<UserNoteConfigurationDto> {
-    const note = await this.prisma.note.findFirst(
-      {
-        where: {
-          id: noteId,
-          createdBy: requestingUserId,
+    try {
+      await this.prisma.note.findFirstOrThrow(
+        {
+          where: {
+            id: noteId,
+            createdBy: requestingUserId,
+          },
         },
-      },
-    );
-
-    if (
-      !note
-    ) {
-      throw new ForbiddenException(
-        'Only the note creator can add collaborators',
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new ForbiddenException(
+          'Only the note creator can add collaborators',
+        ),
+        e,
       );
     }
 
-    const newUser = await this.prisma.user.findUnique(
-      {
-        where: {
-          email,
+    try {
+      const newUser = await this.prisma.user.findUniqueOrThrow(
+        {
+          where: {
+            email,
+          },
         },
-      },
-    );
+      );
 
-    if (
-      !newUser
-    ) {
-      throw new NotFoundException(
-        `No user found with email ${email}`,
+      const userNoteConfig = await this.prisma.userNoteConfiguration.create(
+        {
+          data: {
+            userId: newUser.id,
+            noteId,
+          },
+        },
+      );
+
+      return userNoteConfig;
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          `No user found with email ${email}`,
+        ),
+        e,
       );
     }
-
-    const userNoteConfig = await this.prisma.userNoteConfiguration.create(
-      {
-        data: {
-          userId: newUser.id,
-          noteId,
-        },
-      },
-    );
-
-    return userNoteConfig;
   }
 
   async removeCollaborator(
@@ -350,23 +340,26 @@ export class NoteService
     requestingUserId: number,
     userId: number,
   ): Promise<void> {
-    const note = await this.prisma.note.findFirst(
-      {
-        where: {
-          id: noteId,
-        },
-      },
-    );
+    let requestingUserOwnsNote: boolean = false;
 
-    if (
-      !note
-    ) {
-      throw new NotFoundException(
-        'unknown note id',
+    try {
+      const note = await this.prisma.note.findFirstOrThrow(
+        {
+          where: {
+            id: noteId,
+          },
+        },
+      );
+
+      requestingUserOwnsNote = note.createdBy === requestingUserId;
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          'unknown note id',
+        ),
+        e,
       );
     }
-
-    const requestingUserOwnsNote = note.createdBy === requestingUserId;
 
     if (
       requestingUserId === userId
@@ -401,20 +394,21 @@ export class NoteService
     requestingUserId: number,
     folderId: number,
   ): Promise<void> {
-    const folder = await this.prisma.folder.findUnique(
-      {
-        where: {
-          id: folderId,
-          userId: requestingUserId,
+    try {
+      await this.prisma.folder.findUniqueOrThrow(
+        {
+          where: {
+            id: folderId,
+            userId: requestingUserId,
+          },
         },
-      },
-    );
-
-    if (
-      !folder
-    ) {
-      throw new ForbiddenException(
-        'Only the folder creator can add notes to it',
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new ForbiddenException(
+          'Only the folder creator can add notes to it',
+        ),
+        e,
       );
     }
 
@@ -440,46 +434,47 @@ export class NoteService
     noteId: number,
     requestingUserId: number,
   ): Promise<FolderDto | null> {
-    const userNoteConfig = await this.prisma.userNoteConfiguration.findUnique(
-      {
-        where: {
-          userId_noteId: {
-            userId: requestingUserId,
-            noteId: noteId,
+    try {
+      const userNoteConfig = await this.prisma.userNoteConfiguration.findUniqueOrThrow(
+        {
+          where: {
+            userId_noteId: {
+              userId: requestingUserId,
+              noteId: noteId,
+            },
           },
         },
-      },
-    );
+      );
 
-    if (
-      !userNoteConfig
-    ) {
-      throw new NotFoundException(
-        'unknown note id and user id combination',
+      if (
+        !userNoteConfig.folderId
+      ) {
+        return null;
+      }
+
+      const folder = await this.prisma.folder.findUnique(
+        {
+          where: {
+            id: userNoteConfig.folderId,
+          },
+        },
+      );
+
+      if (
+        !folder
+      ) {
+        return null;
+      }
+
+      return this.toFolderDto(folder);
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          'unknown note id and user id combination',
+        ),
+        e,
       );
     }
-
-    if (
-      !userNoteConfig.folderId
-    ) {
-      return null;
-    }
-
-    const folder = await this.prisma.folder.findUnique(
-      {
-        where: {
-          id: userNoteConfig.folderId,
-        },
-      },
-    );
-
-    if (
-      !folder
-    ) {
-      return null;
-    }
-
-    return this.toFolderDto(folder);
   }
 
 
@@ -488,38 +483,28 @@ export class NoteService
     userId: number,
     folderId: number | null,
   ): Promise<void> {
-    const newUserNoteConfiguration = await this.prisma.userNoteConfiguration.findUnique(
-      {
-        where: {
-          userId_noteId: {
-            userId: userId,
-            noteId: noteId,
+    try {
+      await this.prisma.userNoteConfiguration.update(
+        {
+          where: {
+            userId_noteId: {
+              userId: userId,
+              noteId: noteId,
+            }
+          },
+          data: {
+            folderId: folderId,
           },
         },
-      },
-    );
-
-    if (
-      !newUserNoteConfiguration
-    ) {
-      throw new NotFoundException(
-        `The user used for the request can't find a note with id ${noteId}`,
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          `The user used for the request can't find a note with id ${noteId}`,
+        ),
+        e,
       );
     }
-
-    await this.prisma.userNoteConfiguration.update(
-      {
-        where: {
-          userId_noteId: {
-            userId: userId,
-            noteId: noteId,
-          }
-        },
-        data: {
-          folderId: folderId,
-        },
-      },
-    );
   }
 
   private toFolderDto(
