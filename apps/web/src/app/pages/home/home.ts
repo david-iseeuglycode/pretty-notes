@@ -78,14 +78,8 @@ export class HomePage
   renamingFolder = signal<FolderDto | null>(
     null,
   );
-  renamingNote = signal<number | null>(
-    null,
-  );
   savingFolder = signal<FolderDto | null>(
     null,
-  );
-  savingNote = signal<boolean>(
-    false,
   );
   saveError = signal<string | null>(
     null,
