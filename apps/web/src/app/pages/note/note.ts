@@ -327,8 +327,7 @@ implements OnInit
     );
   }
 
-  delete(
-  ): void {
+  delete(): void {
     this.deleting.set(
       true,
     );

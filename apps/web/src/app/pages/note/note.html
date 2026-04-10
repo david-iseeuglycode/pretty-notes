@@ -4,6 +4,7 @@
       @if (saveError()) {
         <p class="error">{{ saveError() }}</p>
       }
+
       <form
         (ngSubmit)="save()"
         class="admin_tools">
