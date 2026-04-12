@@ -26,7 +26,7 @@ import {
   NoteService,
 } from './note.service.js';
 import {
-  CurrentUser,
+  HttpCurrentUser,
 } from '../auth/current-user.decorator.js';
 import type {
   JwtUser,
@@ -49,7 +49,7 @@ export class NoteController
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
   ): Promise<NoteDto[]> {
     return this.noteService.findAllForUser(
       user.sub,
@@ -63,7 +63,7 @@ export class NoteController
     CsrfGuard,
   )
   delete(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -80,7 +80,7 @@ export class NoteController
     CsrfGuard,
   )
   create(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Body(
       'title',
     ) title: string,
@@ -98,7 +98,7 @@ export class NoteController
     CsrfGuard,
   )
   updateTitle(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -118,7 +118,7 @@ export class NoteController
     ':id',
   )
   findOne(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -134,7 +134,7 @@ export class NoteController
     ':id/collaborators',
   )
   getCollaborators(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -153,7 +153,7 @@ export class NoteController
     CsrfGuard,
   )
   addCollaborator(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -176,7 +176,7 @@ export class NoteController
     CsrfGuard,
   )
   removeCollaborator(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -197,7 +197,7 @@ export class NoteController
     ':id/folder',
   )
   getFolder(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -216,7 +216,7 @@ export class NoteController
     CsrfGuard,
   )
   moveToFolder(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,

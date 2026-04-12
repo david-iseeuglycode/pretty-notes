@@ -23,7 +23,7 @@ import {
   FolderService,
 } from './folder.service.js';
 import {
-  CurrentUser,
+  HttpCurrentUser,
 } from '../auth/current-user.decorator.js';
 import type {
   JwtUser,
@@ -46,7 +46,7 @@ export class FolderController
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
   ): Promise<FolderDto[]> {
     return this.folderService.findAllForUser(
       user.sub,
@@ -57,7 +57,7 @@ export class FolderController
     ':id/notes',
   )
   findAllInFolder(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -74,7 +74,7 @@ export class FolderController
     CsrfGuard,
   )
   create(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Body(
       'name',
     ) name: string,
@@ -92,7 +92,7 @@ export class FolderController
     CsrfGuard,
   )
   delete(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,
@@ -111,7 +111,7 @@ export class FolderController
     CsrfGuard,
   )
   updateName(
-    @CurrentUser() user: JwtUser,
+    @HttpCurrentUser() user: JwtUser,
     @Param(
       'id',
       ParseIntPipe,

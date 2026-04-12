@@ -16,10 +16,10 @@ export interface JwtUser
 }
 
 
-export const CurrentUser = createParamDecorator(
+export const HttpCurrentUser = createParamDecorator(
   (
     _: unknown,
-    ctx: ExecutionContext
+    ctx: ExecutionContext,
   ) => ctx.switchToHttp(
     ).getRequest<Request & { user: unknown }>(
     ).user
