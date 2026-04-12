@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -6,7 +7,7 @@ import {
 import {
   Prisma,
   PrismaService,
-  UserNoteConfiguration,
+  User,
 } from '@pretty-notes/prisma';
 import type {
   FolderDto,
@@ -17,7 +18,10 @@ import type {
 import {
   toUserDto,
 } from '../mappers';
-import { throwCustomIfNotFoundOrRethrow } from '../utilities';
+import {
+  throwCustomIfDuplicateOrRethrow,
+  throwCustomIfNotFoundOrRethrow,
+} from '../utilities';
 
 
 @Injectable()
@@ -29,43 +33,71 @@ export class NoteService
   }
 
 
+  async assertUserCanAccessNote(
+    id: number,
+    userId: number,
+  ): Promise<void> {
+    try {
+      await this.prisma.note.findFirstOrThrow(
+        {
+          where: {
+            id,
+            users: {
+              some: {
+                userId,
+              },
+            },
+          },
+        },
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          'Note not accessible',
+        ),
+        e
+      );
+    }
+  }
+
   async findOne(
     id: number,
     userId: number,
   ): Promise<NoteDto> {
-    const note = await this.prisma.note.findFirst(
-      {
-        where: {
-          id,
-          users: {
-            some: {
-              userId,
+    try {
+      const note = await this.prisma.note.findFirstOrThrow(
+        {
+          where: {
+            id,
+            users: {
+              some: {
+                userId,
+              },
+            },
+          },
+          include: {
+            creator: {
+              select: {
+                id: true,
+                email: true,
+                createdAt: true,
+              },
             },
           },
         },
-        include: {
-          creator: {
-            select: {
-              id: true,
-              email: true,
-              createdAt: true,
-            },
-          },
-        },
-      },
-    );
+      );
 
-    if (
-      !note
-    ) {
-      throw new NotFoundException(
-        'Note not found',
+      return this.toNoteDto(
+        note,
+      );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          'Note not found',
+        ),
+        e
       );
     }
-
-    return this.toNoteDto(
-      note,
-    );
   }
 
   async findAllForUser(
@@ -172,12 +204,18 @@ export class NoteService
 
   async updateContent(
     noteId: number,
+    userId: number,
     content: string,
   ): Promise<void> {
     await this.prisma.note.update(
       {
         where: {
           id: noteId,
+          users: {
+            some: {
+              userId,
+            },
+          },
         },
         data: {
           content,
@@ -230,27 +268,10 @@ export class NoteService
     noteId: number,
     userId: number,
   ): Promise<UserDto[]> {
-    const note = await this.prisma.note.findFirst(
-      {
-        where: {
-          id: noteId,
-          users: {
-            some: {
-              userId,
-            },
-          },
-        },
-      },
+    this.assertUserCanAccessNote(
+      noteId,
+      userId,
     );
-
-    if (
-      !note
-    ) {
-      throw new NotFoundException(
-        'Note not found',
-      );
-    }
-
     const configs = await this.prisma.userNoteConfiguration.findMany(
       {
         where: {
@@ -306,15 +327,26 @@ export class NoteService
       );
     }
 
+    let newUser: User | null = null;
+
     try {
-      const newUser = await this.prisma.user.findUniqueOrThrow(
+      newUser = await this.prisma.user.findUniqueOrThrow(
         {
           where: {
             email,
           },
         },
       );
+    } catch (e) {
+      throwCustomIfNotFoundOrRethrow(
+        new NotFoundException(
+          `No user found with email ${email}`,
+        ),
+        e,
+      );
+    }
 
+    try {
       const userNoteConfig = await this.prisma.userNoteConfiguration.create(
         {
           data: {
@@ -326,9 +358,9 @@ export class NoteService
 
       return userNoteConfig;
     } catch (e) {
-      throwCustomIfNotFoundOrRethrow(
-        new NotFoundException(
-          `No user found with email ${email}`,
+      throwCustomIfDuplicateOrRethrow(
+        new ConflictException(
+          'That user is already a collaborator on this note',
         ),
         e,
       );

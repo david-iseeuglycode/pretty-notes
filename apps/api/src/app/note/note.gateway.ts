@@ -15,6 +15,18 @@ import type {
 import {
   NoteService,
 } from './note.service.js';
+import {
+  WsCurrentUser,
+} from '../auth/current-user.decorator.js';
+import type {
+  JwtUser,
+} from '../auth/current-user.decorator.js';
+import {
+  UseGuards,
+} from '@nestjs/common';
+import {
+  WsGuard,
+} from '../auth/ws.guard.js';
 
 
 @WebSocketGateway(
@@ -38,10 +50,19 @@ export class NoteGateway
   @SubscribeMessage(
     'joinNote',
   )
-  handleJoin(
+  @UseGuards(
+    WsGuard,
+  )
+  async handleJoin(
     @MessageBody() noteId: number,
     @ConnectedSocket() client: Socket,
-  ): void {
+    @WsCurrentUser() user: JwtUser,
+  ): Promise<void> {
+    await this.noteService.assertUserCanAccessNote(
+      noteId,
+      user.sub,
+    );
+
     client.join(
       `note:${noteId}`,
     );
@@ -50,12 +71,17 @@ export class NoteGateway
   @SubscribeMessage(
     'updateNote',
   )
+  @UseGuards(
+    WsGuard,
+  )
   async handleUpdate(
     @MessageBody() event: NoteUpdateEvent,
     @ConnectedSocket() client: Socket,
+    @WsCurrentUser() user: JwtUser,
   ): Promise<void> {
     await this.noteService.updateContent(
       event.noteId,
+      user.sub,
       event.content,
     );
     client.to(

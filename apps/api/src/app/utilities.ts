@@ -16,3 +16,17 @@ export function throwCustomIfNotFoundOrRethrow(
 
   throw exceptionToRethrow;
 }
+
+export function throwCustomIfDuplicateOrRethrow(
+  customException: Error,
+  exceptionToRethrow: unknown,
+): never {
+  if (
+    exceptionToRethrow instanceof Prisma.PrismaClientKnownRequestError
+    && exceptionToRethrow.code === 'P2002'
+  ) {
+    throw customException;
+  }
+
+  throw exceptionToRethrow;
+}

@@ -5,6 +5,9 @@ import {
 import {
   Request,
 } from 'express';
+import {
+  Socket,
+} from 'socket.io';
 
 
 export interface JwtUser
@@ -23,4 +26,13 @@ export const HttpCurrentUser = createParamDecorator(
   ) => ctx.switchToHttp(
     ).getRequest<Request & { user: unknown }>(
     ).user
+);
+
+export const WsCurrentUser = createParamDecorator(
+  (
+    _: unknown,
+    ctx: ExecutionContext,
+  ) => ctx.switchToWs(
+    ).getClient<Socket>(
+    ).data.user
 );

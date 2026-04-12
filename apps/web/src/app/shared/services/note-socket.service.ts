@@ -23,6 +23,7 @@ export class NoteSocketService
         'websocket',
       ],
       autoConnect: false,
+      withCredentials: true,
     },
   );
 
