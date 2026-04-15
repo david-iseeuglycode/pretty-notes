@@ -49,7 +49,9 @@ export class App
     AuthService,
   );
   darkMode = signal<boolean>(
-    false,
+    localStorage.getItem(
+      'darkMode',
+    ) === '1',
   );
   accounting = signal<boolean>(
     false,
@@ -98,9 +100,19 @@ export class App
           'name': `${this.darkModeMenuChoice()} theme`,
           'callback': (
             e: Event,
-          ): void => this.darkMode.set(
-            !this.darkMode(),
-          ),
+          ): void => {
+            const darkMode: boolean = !this.darkMode();
+
+            this.darkMode.set(
+              darkMode,
+            );
+            localStorage.setItem(
+              'darkMode',
+              darkMode
+                ? '1'
+                : '0',
+            );
+          },
           'active': true,
         },
       );
