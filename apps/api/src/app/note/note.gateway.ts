@@ -32,7 +32,7 @@ import {
 @WebSocketGateway(
   {
     cors: {
-      origin: '*',
+      origin: process.env['CORS_ORIGIN'] ?? '*',
     },
   },
 )
