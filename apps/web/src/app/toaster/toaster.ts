@@ -43,41 +43,21 @@ export class ToasterComponent
         !this.toasterDto()
         && !this.message() 
       ) {
-        throw 'TOASTER MESSAGE NOT SET';
+        throw new TypeError('TOASTER MESSAGE NOT SET');
       }
 
-      return this.toasterDto()
-        ? this.toasterDto()!.message
-        : this.message()!;
+      return this.toasterDto()?.message ?? this.message()!;
     }
   );
   _error = computed(
-    (): boolean => {
-      return this.toasterDto()
-        ? this.toasterDto()!.error
-          ? this.toasterDto()!.error!
-          : false
-        : this.error();
-    }
+    (): boolean => this.toasterDto()?.error ?? this.error()
   );
   _secondsToLive = computed(
-    (): number => {
-      return this.toasterDto()
-        ? this.toasterDto()!.secondsToLive
-          ? this.toasterDto()!.secondsToLive!
-          : 0
-        : this.secondsToLive();
-    }
+    (): number => this.toasterDto()?.secondsToLive ?? this.secondsToLive()
   );
   _displayCloserIcon = computed(
-    (): boolean => {
-      return this.toasterDto()
-        ? this.toasterDto()!.displayCloserIcon
-          ? this.toasterDto()!.displayCloserIcon!
-          : true
-        : this.displayCloserIcon();
-    }
-  )
+    (): boolean => this.toasterDto()?.displayCloserIcon ?? this.displayCloserIcon()
+  );
 
 
   constructor() {
