@@ -5,21 +5,19 @@
       (closed)="toaster.set(null)" />
   }
 
-  <h2 class="notes_heading">Your notes</h2>
+  <h2 class="notes-heading">Your notes</h2>
 
   <div class="folders-and-notes">
     <div class="folders">
-      @if (loading() === true)
+      @if (loadingFolders())
       {
         <p>Loading folders...</p>
       } @else {
-        @if (folders().length === 0) {
-          <p>No folders yet.</p>
-        } @else {
+        @if (hasFolders()) {
           <ul>
             @for (folder of folders(); track folder.id) {
               <li class="folder">
-                <div class="folderDetails">
+                <div class="folder-details">
                   @if (folder.id === currentFolder()) {
                     <button
                       (click)="closeFolder()"
@@ -54,7 +52,7 @@
                         [disabled]="savingFolder() === folder">💾</button>
                     </form>
                   } @else {
-                    <span class="folderName">{{ folder.name }}</span>
+                    <span class="folder-name">{{ folder.name }}</span>
                     <button
                       title="Rename {{ folder.name }}"
                       [disabled]="renamingFolder() === folder || deletingFolder() === folder"
@@ -70,26 +68,28 @@
                 @if (folder.id === currentFolder()) {
                   @if (opening()) {
                     <p>Loading notes in {{ folder.name }}...</p>
-                  } @else if (notesInOpenFolder().length === 0) {
-                    <p>No notes in this folder yet.</p>
-                  } @else {
+                  } @else if (openFolderHasNotes()) {
                     <pn-list-of-note-links
                       [inRootFolder]="false"
                       [listOfNoteLinks]="notesInOpenFolder()"
                       [availableFolders]="folders()"
                       (noteMovedToFolderId)="openFolder($event)"
                       (noteModified)="openFolder(currentFolder()!)" />
+                  } @else {
+                    <p>No notes in this folder yet.</p>
                   }
                 }
               </li>
             }
           </ul>
+        } @else {
+          <p>No folders yet.</p>
         }
       }
     </div>
 
     <div class="form">
-      <h3 class="notes_heading">New folder</h3>
+      <h3 class="notes-heading">New folder</h3>
       <form (ngSubmit)="createFolder()">
         <div>
           <label
@@ -108,25 +108,25 @@
     </div>
 
     <div class="notes">
-      @if (loading() === true)
+      @if (loadingNotes())
       {
         <p>Loading notes in root...</p>
       } @else {
-        @if (notes().length === 0) {
-          <p>No notes yet.</p>
-        } @else {
+        @if (rootHasNotes()) {
           <pn-list-of-note-links
             [inRootFolder]="true"
             [listOfNoteLinks]="notes()"
             [availableFolders]="folders()"
             (noteMovedToFolderId)="noteMovedFromRoot($event)"
             (noteModified)="loadNotes()" />
+        } @else {
+          <p>No notes yet.</p>
         }
       }
     </div>
 
     <div class="form">
-      <h3 class="notes_heading">New note</h3>
+      <h3 class="notes-heading">New note</h3>
       <form (ngSubmit)="createNote()">
         <div>
           <label class="invisible" for="noteTitle">Note to add</label>

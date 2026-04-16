@@ -83,6 +83,9 @@ implements OnInit
   saveError = signal<string | null>(
     null,
   );
+  hasCollaborators = computed(
+    (): boolean => this.collaborators().length > 0
+  );
   isCreator = computed(
     (): boolean => {
       const user = this.auth.currentUser();
@@ -258,7 +261,7 @@ implements OnInit
 
   save(): void {
     if (
-      !this.isCreator
+      !this.isCreator()
     ) {
       this.saveError.set(
         'Only the owner of the note can change the title',

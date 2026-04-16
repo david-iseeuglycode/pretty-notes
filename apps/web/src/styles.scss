@@ -28,7 +28,9 @@
   --color-error: #ff5555;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 

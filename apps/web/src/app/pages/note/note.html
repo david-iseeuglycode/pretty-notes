@@ -7,7 +7,7 @@
 
       <form
         (ngSubmit)="save()"
-        class="admin_tools">
+        class="admin-tools">
         <div>
           <label
             class="invisible"
@@ -28,11 +28,10 @@
       <h1>{{ displayTitle() }}</h1>
     }
 
-    <div class="admin_tools">
+    <div class="admin-tools">
         @if (isCreator() && !renaming()) {
           <button
             title="Rename note"
-            [disabled]="renaming()"
             (click)="rename()">🖉</button>
         }
 
@@ -52,7 +51,7 @@
     (ngModelChange)="onContentChange($event)"></textarea>
 
   <section>
-    @if (collaborators().length > 0) {
+    @if (hasCollaborators()) {
       <h2>Collaborators</h2>
       <ul>
         @for (user of collaborators(); track user.id) {

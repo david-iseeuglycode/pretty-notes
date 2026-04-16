@@ -87,9 +87,14 @@ export class HomePage
   toaster = signal<ToasterDto | null>(
     null,
   );
-  loading = computed(
-    (): boolean => this.loadingNotes()
-      || this.loadingFolders()
+  hasFolders = computed(
+    () => this.folders().length > 0
+  );
+  openFolderHasNotes = computed(
+    (): boolean => this.notesInOpenFolder().length > 0
+  )
+  rootHasNotes = computed(
+    (): boolean => this.notes().length > 0
   );
   opening = signal<boolean>(
     false,

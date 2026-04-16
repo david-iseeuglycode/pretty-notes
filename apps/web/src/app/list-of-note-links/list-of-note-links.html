@@ -3,7 +3,7 @@
     [toasterDto]="toaster()!"
     (closed)="toaster.set(null)" />
 }
-<ul class="notes_list" [class.inFolder]="!inRootFolder()">
+<ul class="notes-list" [class.in-folder]="!inRootFolder()">
   @for (note of listOfNoteLinks(); track note.id) {
     <li>
       <div class="noteDetails">
@@ -48,7 +48,7 @@
           </select>
         } @else {
           <button
-            [disabled]="moving() || availableFolders().length === 0"
+            [disabled]="!notesAreMovable()"
             (click)="move(note.id)"
             [title]="titleForMoveButton()">⤷</button>
         }

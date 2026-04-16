@@ -62,7 +62,9 @@ export class ListOfNoteLinksComponent
     null,
   );
   titleForMoveButton = computed(
-    (): string => `Move to ${this.inRootFolder() ? '' : 'other '}folder`
+    (): string => this.notesAreMovable()
+      ? `Move to ${this.inRootFolder() ? '' : 'other '}folder`
+      : 'Create a folder to move notes to'
   );
   noteSelectingFolder = signal<number | null>(
     null,
@@ -72,6 +74,10 @@ export class ListOfNoteLinksComponent
   );
   toaster = signal<ToasterDto | null>(
     null,
+  );
+  notesAreMovable = computed(
+    (): boolean => (!this.moving())
+      && (this.availableFolders().length > 0)
   );
   renamedNoteTitle = '';
 
